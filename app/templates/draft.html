@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* Additional CSS styles */
+
+    input[type="radio"] {
+        /* Define custom size */
+        width: 20px;
+        height: 20px;
+    }
+    .submit-button {
+        padding: 15px;
+        width: 100%; /* Button width extends to full width */
+        margin: 15px 0;
+        border: none;
+        background-color: #ffcb05;
+        color: #2c442b;
+        font-size: 20px;
+        border-radius: 5px;
+    }
+
+    .form {
+        width: 70%; /* Reduced form width */
+        margin: 0 auto; /* Centering the form container */
+        background-color: #48823a;
+        padding: 15px;
+        margin-top: 10px;
+        border-radius: 28px;
+    }
+
+    /* Apply the width change to the container for screens smaller than 765px (phones) */
+    @media (max-width: 765px) {
+        .form {
+            width: 100%; /* Adjust the width as needed */
+            padding: 0px;
+            margin: 0 auto;
+        }
+    }
+</style>
+
+<div class="content-section">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <p style="text-align: center;">
+                <a>Draft Golfer for Tier {{ tier }}</a>
+            </p>
+            <table class="table table-striped">
+                <div>
+                    <div class="form">{{ form.player_selection(index=index) }}</div>
+                    <hr>
+                    <tr>
+                        <th>Golfer</th>
+                        {% for column in players.columns %}
+                            {% if column != 'Golfer' %}
+                                <th>{{ column }}</th>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                </div>
+                <tbody>
+                    <!-- Table rows for each player -->
+                    {% for index, player in players.iterrows() %}
+                        <tr>
+                            <!-- Display only the radio button in the "Select" column -->
+                            <td>{{ player['Golfer'] }}</td> <!-- Display player's name in the "Golfer" column -->
+                            {% for column, value in player.items() %}
+                                {% if column != 'Golfer' %}
+                                    <td>{{ value }}</td> <!-- Display other column values -->
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit" class="submit-button">Submit</button>
+        </fieldset>
+    </form>
+</div>
+{% endblock %}

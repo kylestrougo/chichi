@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .container {
+        margin: 0 auto;
+        padding: 0 10px;
+    }
+
+    /* Apply the width change to the container for screens smaller than 765px (phones) */
+    @media (max-width: 765px) {
+        .container {
+            width: 100%; /* Adjust the width as needed */
+            padding: 0px;
+            margin: 0 auto;
+        }
+
+    }
+
+    .login-box {
+        background-color: #48823a;
+        padding: 20px;
+        border-radius: 28px;
+    }
+
+    .login-form {
+        text-align: center;
+    }
+
+    table {
+        background-color: #48823a;
+        width: 100%; /* Set the table width to 100% to match the container */
+        border-radius: 28px;
+    }
+
+    th, td {
+        background-color: #48823a;
+        padding: 20px;
+        font-size: 20px;
+        border-radius: 28px;
+        border: 5px solid #2c442b;
+    }
+
+     td.avatar {
+        border-right: 2px solid #2c442b; /* Add a right border to the avatar td element */
+    }
+
+    .post-container {
+        background-color: #48823a;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 28px;
+    }
+
+    h1 {
+        font-size: 24px;
+        text-align: center;
+    }
+
+    h1.left-aligned {
+        text-align: left;
+    }
+
+    a {
+        color: #ffcb05;
+        text-decoration: none;
+        font-size: 19px;
+    }
+
+    a:hover {
+        color: #ffa500;
+    }
+</style>
+
+<div class="container">
+    <table>
+        <tr valign="center">
+            <td><img src="{{ user.avatar(128) }}"></td>
+            <td>
+                <h1 style="text-align: center;">{{ user.username }}</h1>
+                {% if user.about_me %}<p style="text-align: center;">{{ user.about_me }}</p>{% endif %}
+                {% if user.last_seen %}<p style="text-align: center;">Last seen: {{ moment(user.last_seen).format('LLL') }}</p>{% endif %}
+                {% if user == current_user %}
+                <p style="text-align: center;">
+                    <a href="{{ url_for('draft', tier=1, username = user) }}">Edit Lineup</a>
+                    <div class="login-logout">
+                        {% if current_user.is_anonymous %}
+                            <a href="{{ url_for('login') }}">Login</a>
+                        {% else %}
+                            <a href="{{ url_for('logout') }}">Logout</a>
+                        {% endif %}
+                    </div>
+                </p>
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+    <hr>
+
+</div>
+{% endblock %}

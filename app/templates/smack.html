@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+    <style>
+        .container {
+            width: 90%; /* Wider container for better mobile use */
+            margin: 0 auto;
+            border-radius: 28px; /* Add border-radius to round corners */
+        }
+
+        .header {
+        margin-bottom: 20px;
+        }
+
+         table {
+            background-color: #48823a; /* Set background color for the table */
+            width: 100%;
+        }
+
+    .leaderboard-text {
+        font-size: 24px;
+    }
+
+        h1 {
+            color: #ffcb05;
+            text-align: center;
+            font-size: 28px; /* Larger font size for headings */
+        }
+
+        form {
+            background-color: #48823a;
+            padding: 20px;
+            border-radius: 28px; /* Add border-radius to round corners */
+
+        }
+         .post {
+            background-color: #48823a; /* Set background color to light green */
+            padding: 20px;
+            text-align: center;
+            border-radius: 28px; /* Add border-radius to round corners */
+            margin-bottom: 20px; /* Add margin to separate posts */
+
+        }
+
+        /* Style for text boxes (off-white background, matching the login page) */
+        input[type="text"],
+        textarea {
+            padding: 15px; /* Increased padding for better touch interaction */
+            width: 90%; /* Wider text boxes for mobile screens */
+            margin: 15px 0; /* Adjusted margin for better spacing */
+            border: none;
+            background-color: #e4f1d3; /* Off-white background */
+            color: #2c442b; /* Text color */
+            font-size: 20px; /* Larger font size for better readability */
+            border-radius: 5px; /* Rounded corners */
+        }
+
+        /* Style for the button (matching the login page) */
+        button {
+            padding: 15px; /* Increased padding for better touch interaction */
+            width: 90%; /* Wider button for mobile screens */
+            margin: 15px 0; /* Adjusted margin for better spacing */
+            border: none;
+            background-color: #ffcb05; /* Yellow background color */
+            color: #2c442b; /* Text color */
+            font-size: 20px; /* Larger font size for better readability */
+            border-radius: 5px; /* Rounded corners */
+        }
+
+
+    </style>
+<h1 class="header">Chi Chi Smack Board</h1>
+
+    <div class="container" style="text-align: center;">
+        {% if form %}
+            <form action="" method="post" class="post">
+                {{ form.hidden_tag() }}
+                <p>
+                    {{ form.post.label }}<br>
+                    {{ form.post(size=32, rows=4) }}<br>
+                    {% for error in form.post.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                <p>
+                    <button type="submit" style="font-size: 20px;">Post</button>
+                </p>
+            </form>
+        {% endif %}
+        <hr>
+        {% for post in posts %}
+            <form class="post">
+                <table>
+                    <tr valign="top">
+                        <td><img src="{{ post.author.avatar(36) }}"></td>
+                        <td style="text-align: left;">
+                            <a href="{{ url_for('user', username=post.author.username) }}">
+                                {{ post.author.username }}
+                            </a>
+                            :  {{ post.body }}
+                        </td>
+                    </tr >
+                </table>
+            </form>
+        <hr>
+        {% endfor %}
+    </div>
+{% endblock %}

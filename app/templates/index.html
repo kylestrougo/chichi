@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    /* Move the styles from the <head> section to the body */
+    .header {
+        text-align: center;
+        background-color: #48823a;
+        color: #ffcb05;
+        padding: 0;
+        font-size: 80px;
+        height: 100px;
+        line-height: 80px;
+    }
+
+    .leaderboard-text {
+        font-size: 24px;
+    }
+
+    .logo {
+        max-width: 100px;
+        vertical-align: middle;
+        margin-right: 5px;
+    }
+
+    .table-container {
+        overflow-x: auto; /* Enable horizontal scrolling for the table container */
+    }
+
+    table {
+        width: 100%; /* Make the table fill the container width */
+    }
+
+    /* Styles for mobile devices */
+    @media (max-width: 768px) {
+        .header {
+            font-size: 40px;
+            height: auto; /* Adjust height for smaller screens */
+            line-height: 50px;
+        }
+
+        .logo {
+            max-width: 60px;
+            margin-right: 3px;
+        }
+        table, table td, table th {
+            font-size: 10px !important; /* Further decrease the font size for mobile screens */
+        }
+    }
+
+    /* Style for the datetime text */
+    .datetime-text {
+        font-size: 12px; /* Adjust the font size as needed */
+        font-style: italic; /* Italicize the text */
+        color: #ffcb05;
+    }
+</style>
+
+<div class="header">
+    <img src="{{ url_for('static', filename='v4.png') }}" alt="Masters Logo" class="logo">
+    <span class="leaderboard-text">Leaderboard</span>
+</div>
+<div style="text-align: center;">
+    <span class="datetime-text">{{ datetime }}</span>
+</div>
+<div class="table-container">
+        <table>
+        <tr>
+            <th>Position</th>
+            <th>Player</th>
+            <th>Round 1</th>
+            <th>Round 2</th>
+            <th>Round 3</th>
+            <th>Round 4</th>
+            <th>To Par</th>
+        </tr>
+        {% for entry in data %}
+            {{ entry|safe }}
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

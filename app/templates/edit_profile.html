@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+    <style>
+        .container {
+            width: 90%; /* Wider container for better mobile use */
+            margin: 0 auto;
+            border-radius: 28px; /* Add border-radius to round corners */
+        }
+
+        h1 {
+            color: #ffcb05;
+            text-align: center;
+            font-size: 28px; /* Larger font size for headings */
+        }
+
+        form {
+            background-color: #48823a;
+            padding: 20px;
+            text-align: center;
+            border-radius: 28px; /* Add border-radius to round corners */
+        }
+
+        /* Style for text boxes (off-white background, matching the login page) */
+        input[type="text"],
+        textarea {
+            padding: 15px; /* Increased padding for better touch interaction */
+            width: 90%; /* Wider text boxes for mobile screens */
+            margin: 15px 0; /* Adjusted margin for better spacing */
+            border: none;
+            background-color: #e4f1d3; /* Off-white background */
+            color: #2c442b; /* Text color */
+            font-size: 20px; /* Larger font size for better readability */
+            border-radius: 5px; /* Rounded corners */
+        }
+
+        /* Style for the button (matching the login page) */
+        button {
+            padding: 15px; /* Increased padding for better touch interaction */
+            width: 90%; /* Wider button for mobile screens */
+            margin: 15px 0; /* Adjusted margin for better spacing */
+            border: none;
+            background-color: #ffcb05; /* Yellow background color */
+            color: #2c442b; /* Text color */
+            font-size: 20px; /* Larger font size for better readability */
+            border-radius: 5px; /* Rounded corners */
+        }
+
+    </style>
+
+    <div class="container">
+
+        <form action="" method="post">
+            <h1>Edit Profile</h1>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.username.label }}<br>
+                {{ form.username(size=32) }}<br>
+                {% for error in form.username.errors %}
+                <span style="color: red; font-size: 18px;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.about_me.label }}<br>
+                {{ form.about_me(cols=50, rows=4) }}<br>
+                {% for error in form.about_me.errors %}
+                <span style="color: red; font-size: 18px;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                <button type="submit" style="font-size: 20px;">Save Changes</button>
+            </p>
+        </form>
+    </div>
+{% endblock %}

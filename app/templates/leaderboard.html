@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<head>
+    <title>Chi Chi Leaderboard</title>
+
+
+</head>
+<body>
+    <h1>Chi Chi Leaderboard</h1>
+    <div style="overflow-x:auto;">
+        {{ table | safe }}
+    </div>
+</body>
+{% endblock %}
