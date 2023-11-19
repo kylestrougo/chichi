@@ -31,8 +31,20 @@ def index():
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
+    ##print(user)
+    user_record = Draft.query.filter_by(user=current_user).first()
+    user_record_dict = {
+        #"user_id": user_record.user_id,
+        "tier1": user_record.tier1,
+        "tier2": user_record.tier2,
+        "tier3": user_record.tier3,
+        "tier4": user_record.tier4,
+        "tier5": user_record.tier5,
+        "tier6": user_record.tier6
+    }
+    #print(user_record)
 
-    return render_template('user.html', user=user)
+    return render_template('user.html', user=user, user_record_dict=user_record_dict)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -123,12 +135,9 @@ def smack():
                            posts=posts)
 
 
-
 @app.route('/draft/<int:tier>/<username>', methods=['GET', 'POST'])
 @login_required
 def draft(tier, username):
-    # Load players data based on tier from CSV or database
-    # Replace this line with your data loading logic
     players = pd.read_csv('app/players_tiered.csv')
     players.drop(columns=['Unnamed: 0'], inplace=True)
 
@@ -136,26 +145,25 @@ def draft(tier, username):
     filtered_players = players[players['Tier'] == tier]
 
     form = PlayerSelectionForm()
-
     # Update choices for the radio field dynamically
     form.player_selection.choices = [(index, player['Golfer']) for index, player in filtered_players.iterrows()]
+    user = User.query.filter_by(username=username).first_or_404()
 
     if form.validate_on_submit():
         selected_player_index = form.player_selection.data
-        #selected_player = filtered_players.iloc[selected_player_index]
+        # selected_player = filtered_players.iloc[selected_player_index]
         selected_player = filtered_players.at[selected_player_index, 'Golfer']
-
         # Save selected player to the database or perform any other actions
-        print(selected_player, " ", username)
-        update_player_by_tier(username, tier, selected_player)
+
+        update_player_by_tier(user.id, tier, selected_player)
 
         # Redirect to the next tier or a different page
         next_tier = tier + 1
         if next_tier <= 6:
-            return redirect(url_for('draft', tier=next_tier, username = username))
+            return redirect(url_for('draft', tier=next_tier, username=current_user))
         else:
             # Draft completed, redirect to a different page
-            username = User.query.filter_by(username=username).first_or_404()
-            return redirect(url_for('user', username=username))
+            return redirect(url_for('user', username=current_user))
 
-    return render_template('draft.html', title='Draft Lineup', form=form, players=filtered_players, tier=tier, username = username)
+    return render_template('draft.html', title='Draft Lineup', form=form, players=filtered_players, tier=tier,
+                           username=current_user)

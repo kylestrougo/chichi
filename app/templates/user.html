@@ -1,10 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
+
 <style>
     .container {
         margin: 0 auto;
         padding: 0 10px;
     }
+    .us {
+            background-color: #48823a; /* Set background color to light green */
+            padding: 20px;
+            text-align: center;
+            border-radius: 28px; /* Add border-radius to round corners */
+            margin-bottom: 20px; /* Add margin to separate posts */
+
+        }
 
     /* Apply the width change to the container for screens smaller than 765px (phones) */
     @media (max-width: 765px) {
@@ -24,20 +33,6 @@
 
     .login-form {
         text-align: center;
-    }
-
-    table {
-        background-color: #48823a;
-        width: 100%; /* Set the table width to 100% to match the container */
-        border-radius: 28px;
-    }
-
-    th, td {
-        background-color: #48823a;
-        padding: 20px;
-        font-size: 20px;
-        border-radius: 28px;
-        border: 5px solid #2c442b;
     }
 
      td.avatar {
@@ -72,7 +67,8 @@
 </style>
 
 <div class="container">
-    <table>
+    <div class="us">
+    <table class="us">
         <tr valign="center">
             <td><img src="{{ user.avatar(128) }}"></td>
             <td>
@@ -94,7 +90,22 @@
             </td>
         </tr>
     </table>
+        </div>
     <hr>
+<div class="table-container">
+    <table>
+        <tr>
+            <th>Tier</th>
+            <th>Golfer</th>
+        </tr>
+        {% for key, value in user_record_dict.items() %}
+            <tr>
+                <td>{{ key }}</td>
+                <td>{{ value }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
 
 </div>
 {% endblock %}

@@ -80,4 +80,4 @@ class Draft(db.Model):
     tier6 = db.Column(db.String(64))
 
     def __repr__(self):
-        return f"User: {self.user_id} Tier1: {self.tier1} Tier2: {self.tier2} Tier3: {self.tier3} Tier4: {self.tier4} Tier5: {self.tier5} Tier6: {self.tier6}"
+        return f"User: {self.user_id}, Tier1: {self.tier1}, Tier2: {self.tier2}, Tier3: {self.tier3}, Tier4: {self.tier4}, Tier5: {self.tier5}, Tier6: {self.tier6}"
