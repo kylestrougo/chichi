@@ -82,7 +82,7 @@ def register():
         db.session.add(user)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
-        return redirect(url_for('login'))
+        return redirect(url_for('draft', tier=1, username=user))
     return render_template('register.html', title='Register', form=form)
 
 
@@ -160,10 +160,37 @@ def draft(tier, username):
         # Redirect to the next tier or a different page
         next_tier = tier + 1
         if next_tier <= 6:
-            return redirect(url_for('draft', tier=next_tier, username=current_user))
+            return redirect(url_for('draft', tier=next_tier, username=user))
         else:
             # Draft completed, redirect to a different page
-            return redirect(url_for('user', username=current_user))
+            return redirect(url_for('user', username=user))
+
+    return render_template('draft.html', title='Draft Lineup', form=form, players=filtered_players, tier=tier,
+                           username=user)
+
+@app.route('/tier/<int:tier>/<username>', methods=['GET', 'POST'])
+@login_required
+def tier(tier, username):
+    players = pd.read_csv('app/players_tiered.csv')
+    players.drop(columns=['Unnamed: 0'], inplace=True)
+
+    # Filter players based on the current tier
+    filtered_players = players[players['Tier'] == tier]
+
+    form = PlayerSelectionForm()
+    # Update choices for the radio field dynamically
+    form.player_selection.choices = [(index, player['Golfer']) for index, player in filtered_players.iterrows()]
+    user = User.query.filter_by(username=username).first_or_404()
+
+    if form.validate_on_submit():
+        selected_player_index = form.player_selection.data
+        # selected_player = filtered_players.iloc[selected_player_index]
+        selected_player = filtered_players.at[selected_player_index, 'Golfer']
+        # Save selected player to the database or perform any other actions
+
+        update_player_by_tier(user.id, tier, selected_player)
+
+        return redirect(url_for('user', username=current_user))
 
     return render_template('draft.html', title='Draft Lineup', form=form, players=filtered_players, tier=tier,
                            username=current_user)
