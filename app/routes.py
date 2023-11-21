@@ -82,6 +82,7 @@ def register():
         db.session.add(user)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
+        login_user(user)
         return redirect(url_for('draft', tier=1, username=user))
     return render_template('register.html', title='Register', form=form)
 
@@ -162,7 +163,7 @@ def draft(tier, username):
         if next_tier <= 6:
             return redirect(url_for('draft', tier=next_tier, username=user))
         else:
-            # Draft completed, redirect to a different page
+            # Draft completed, redirect to completed profile
             return redirect(url_for('user', username=user))
 
     return render_template('draft.html', title='Draft Lineup', form=form, players=filtered_players, tier=tier,
