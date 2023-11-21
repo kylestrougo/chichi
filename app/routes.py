@@ -1,6 +1,6 @@
 from app import app, db
 from flask import render_template, flash, redirect, url_for, request
-from helper import scrape_data, update_player_by_tier
+from helper import scrape_data, update_player_by_tier, get_leaderboard
 from app.models import User, Post
 from app.forms import LoginForm, PostForm, PlayerSelectionForm, PlayerSelectionSubForm
 from flask_login import current_user, login_user, logout_user, login_required
@@ -114,9 +114,9 @@ def edit_profile():
 @app.route('/leaderboard')
 @login_required
 def leaderboard():
-    # data = scrape_data()
-    # table_html = data.to_html(classes='table table-bordered', index=False)
-    return render_template('leaderboard.html')
+    leaderboard = get_leaderboard()
+    print(leaderboard)
+    return render_template('leaderboard.html', leaderboard=leaderboard)
 
 
 @app.route('/smack', methods=['GET', 'POST'])

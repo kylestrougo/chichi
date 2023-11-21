@@ -4,8 +4,9 @@ import pandas as pd
 from datetime import datetime
 from flask_login import current_user
 from app import db, app
-from app.models import Masters, updated, Draft
+from app.models import User, Masters, updated, Draft
 from sqlalchemy.exc import IntegrityError
+
 
 def scrape_data():
     # Replace 'url' with the URL of the webpage containing the table
@@ -22,8 +23,8 @@ def scrape_data():
     table = soup.find('table', class_='chakra-table')
 
     # Check if the table was found
-    #if table:
-     #   print("**** Table found")
+    # if table:
+    #   print("**** Table found")
 
     data = []
     headers = []
@@ -37,9 +38,9 @@ def scrape_data():
             data.append(row_data)
 
     # Print the headers and a sample row to verify the data
-    #print("Headers:", headers)
-    #if data:
-     #   print("Sample Row:", data[0])
+    # print("Headers:", headers)
+    # if data:
+    #   print("Sample Row:", data[0])
 
     df = pd.DataFrame(data, columns=headers)
 
@@ -73,7 +74,7 @@ def update_data():
     d = datetime.now()
     d = d.strftime("%A, %b %d at %I:%M %p")
     d = "Refreshed: " + d
-    #print(d)
+    # print(d)
 
     db.session.query(updated).delete()
     d = updated(datetime=str(d))
@@ -99,3 +100,24 @@ def update_player_by_tier(user_id, tier, player_name):
         db.session.commit()
     except IntegrityError:
         db.session.rollback()  # Handle any errors that occurred during commit
+
+
+def get_leaderboard():
+    leaderboard_data = db.session.query(User.username, Draft, db.func.sum(Masters.to_par).label('total_score')) \
+        .join(Draft) \
+        .join(Masters, (Draft.tier1 == Masters.player) |
+              (Draft.tier2 == Masters.player) |
+              (Draft.tier3 == Masters.player) |
+              (Draft.tier4 == Masters.player) |
+              (Draft.tier5 == Masters.player) |
+              (Draft.tier6 == Masters.player)) \
+        .group_by(Draft.id) \
+        .order_by('total_score') \
+        .all()
+
+    leaderboard_entries = []
+    for entry in leaderboard_data:
+        user_entry = f"<tr><td>{entry.username}</td><td>{entry.Draft.tier1}</td><td>{entry.Draft.tier2}</td><td>{entry.Draft.tier3}</td><td>{entry.Draft.tier4}</td><td>{entry.Draft.tier5}</td><td>{entry.Draft.tier6}</td><td>{entry.total_score}</td></tr>"
+        leaderboard_entries.append(user_entry)
+
+    return leaderboard_entries
