@@ -32,7 +32,7 @@ def index():
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     ##print(user)
-    user_record = Draft.query.filter_by(user=current_user).first()
+    user_record = Draft.query.filter_by(user=user).first()
     user_record_dict = {
         #"user_id": user_record.user_id,
         "tier1": user_record.tier1,
