@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 from datetime import datetime
+
+from flask import url_for
 from flask_login import current_user
 from app import db, app
 from app.models import User, Masters, updated, Draft
@@ -117,7 +119,8 @@ def get_leaderboard():
 
     leaderboard_entries = []
     for entry in leaderboard_data:
-        user_entry = f"<tr><td>{entry.username}</td><td>{entry.Draft.tier1}</td><td>{entry.Draft.tier2}</td><td>{entry.Draft.tier3}</td><td>{entry.Draft.tier4}</td><td>{entry.Draft.tier5}</td><td>{entry.Draft.tier6}</td><td>{entry.total_score}</td></tr>"
+        user_profile_url = url_for('user', username=entry.username)
+        user_entry = f"<tr><td><a href='{user_profile_url}'>{entry.username}</a></td><td>{entry.Draft.tier1}</td><td>{entry.Draft.tier2}</td><td>{entry.Draft.tier3}</td><td>{entry.Draft.tier4}</td><td>{entry.Draft.tier5}</td><td>{entry.Draft.tier6}</td><td>{entry.total_score}</td></tr>"
         leaderboard_entries.append(user_entry)
 
     return leaderboard_entries

@@ -63,21 +63,25 @@
     <h1>Chi Chi Leaderboard</h1>
 
 <div class="table-container">
-        <table>
-        <tr>
-            <th>User</th>
-            <th>Tier 1 Player</th>
-            <th>Tier 2 Player</th>
-            <th>Tier 3 Player</th>
-            <th>Tier 4 Player</th>
-            <th>Tier 5 Player</th>
-            <th>Tier 6 Player</th>
-            <th>Grand Total To Par</th>
-        </tr>
-        {% for entry in leaderboard %}
-            {{ entry|safe }}
-        {% endfor %}
-    </table>
+     <table border="1">
+  <thead>
+    <tr>
+      <th>Username</th>
+      <th>Tier 1</th>
+      <th>Tier 2</th>
+      <th>Tier 3</th>
+      <th>Tier 4</th>
+      <th>Tier 5</th>
+      <th>Tier 6</th>
+      <th>Total Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for entry in leaderboard %}
+    {{ entry | safe }}
+    {% endfor %}
+  </tbody>
+</table>
 </div>
 </body>
 {% endblock %}

@@ -75,7 +75,7 @@
 
     <div style="text-align: center;">
          <a href="{{ url_for('smack') }}">Smack Board |</a>
-        <a href="{{ url_for('leaderboard') }}">Chi Chi | </a>
+        <a href="{{ url_for('leaderboard') }}">Leaderboard | </a>
         <a href="{{ url_for('index') }}">  Masters | </a>
 {% if current_user.is_authenticated %}
     <a href="{{ url_for('user', username=current_user.username) }}">Profile</a>
