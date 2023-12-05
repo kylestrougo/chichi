@@ -18,6 +18,8 @@ app.config['STATIC_FOLDER'] = 'static'
 mail = Mail(app)
 scheduler = APScheduler()
 scheduler.init_app(app)
+app.config['SESSION_COOKIE_DOMAIN'] = 'localhost.localdomain'
+
 
 from app import routes, models
 

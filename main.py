@@ -11,8 +11,7 @@ if __name__ == '__main__':
     # Email leaderboard EOD
     start_date = datetime(2023, 12, 1)
     end_date = datetime(2023, 12, 5)
-    # This example schedules the job at 10 AM each day between the start and end dates
-    trigger = CronTrigger(hour=14, minute=44, second=30)
+    trigger = CronTrigger(hour=15, minute=22, second=0)
     scheduler.add_job(id='email_leaderboard', func=send_leaderboard_email, trigger=trigger, start_date=start_date, end_date=end_date)
 
     # start jobs and app
