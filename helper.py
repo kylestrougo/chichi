@@ -11,6 +11,12 @@ from app.models import User, Masters, updated, Draft
 from sqlalchemy.exc import IntegrityError
 from flask import render_template
 from threading import Thread
+import os
+import openai
+from dotenv import load_dotenv, find_dotenv
+_ = load_dotenv(find_dotenv()) # read local .env file
+
+openai.api_key  = os.getenv('OPENAI_API_KEY')
 
 
 def scrape_data():
@@ -150,3 +156,23 @@ def send_password_reset_email(user):
 def send_async_email(app, msg):
     with app.app_context():
         mail.send(msg)
+
+def get_completion_from_messages(messages, model="gpt-3.5-turbo", temperature=0):
+    response = openai.ChatCompletion.create(
+        model=model,
+        messages=messages,
+        temperature=temperature, # this is the degree of randomness of the model's output
+    )
+#     print(str(response.choices[0].message))
+    return response.choices[0].message["content"]
+def chat_gpt():
+    messages = [
+        {'role': 'system', 'content': 'You are witty and rude chatbot.'},
+        {'role': 'user',
+         'content': 'Summarize the scoreboard for a competition: kyle is in 1st place, jack is in second place, jason is in 33rd place'}]
+    response = get_completion_from_messages(messages, temperature=1)
+    #print(response)
+    test = 0
+    send_email("Leaderboard Updates",'kstrougo@gmail.com', response, test)
+
+#chat_gpt()#requires python3.7.1
