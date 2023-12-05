@@ -115,7 +115,7 @@ def edit_profile():
 @login_required
 def leaderboard():
     leaderboard = get_leaderboard()
-    print(leaderboard)
+    #print(leaderboard)
     return render_template('leaderboard.html', leaderboard=leaderboard)
 
 

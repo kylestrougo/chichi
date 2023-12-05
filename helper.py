@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 from datetime import datetime
 from flask_mail import Message
+from sqlalchemy import desc
 from app import mail
 from flask import url_for
 from flask_login import current_user
@@ -11,13 +12,7 @@ from app.models import User, Masters, updated, Draft
 from sqlalchemy.exc import IntegrityError
 from flask import render_template
 from threading import Thread
-import os
-import openai
-from dotenv import load_dotenv, find_dotenv
-_ = load_dotenv(find_dotenv()) # read local .env file
-
-openai.api_key  = os.getenv('OPENAI_API_KEY')
-
+from collections import defaultdict
 
 def scrape_data():
     # Replace 'url' with the URL of the webpage containing the table
@@ -123,14 +118,23 @@ def get_leaderboard():
               (Draft.tier5 == Masters.player) |
               (Draft.tier6 == Masters.player)) \
         .group_by(Draft.id) \
-        .order_by('total_score') \
+        .order_by(desc('total_score')) \
         .all()
 
-    leaderboard_entries = []
+    # Dictionary to store users' total scores
+    scores = defaultdict(list)
     for entry in leaderboard_data:
-        user_profile_url = url_for('user', username=entry.username)
-        user_entry = f"<tr><td><a href='{user_profile_url}'>{entry.username}</a></td><td>{entry.Draft.tier1}</td><td>{entry.Draft.tier2}</td><td>{entry.Draft.tier3}</td><td>{entry.Draft.tier4}</td><td>{entry.Draft.tier5}</td><td>{entry.Draft.tier6}</td><td>{entry.total_score}</td></tr>"
-        leaderboard_entries.append(user_entry)
+        scores[entry.total_score].append(entry)
+
+    leaderboard_entries = []
+    rank = 1
+    for total_score, users in sorted(scores.items(), reverse=False):
+        for entry in users:
+            user_profile_url = url_for('user', username=entry.username)
+            user_entry = f"<tr><td>{rank}</td><td><a href='{user_profile_url}'>{entry.username}</a></td><td>{entry.Draft.tier1}</td><td>{entry.Draft.tier2}</td><td>{entry.Draft.tier3}</td><td>{entry.Draft.tier4}</td><td>{entry.Draft.tier5}</td><td>{entry.Draft.tier6}</td><td>{total_score}</td></tr>"
+            leaderboard_entries.append(user_entry)
+
+        rank += 1  # Increment rank by 1 after processing users with the same score
 
     return leaderboard_entries
 
@@ -143,6 +147,8 @@ def send_email(subject, sender, recipients, text_body, html_body):
 
 
 def send_password_reset_email(user):
+    x = get_leaderboard()
+    send_leaderboard_email(x)
     token = user.get_reset_password_token()
     send_email('[Chi Chi] Reset Your Password',
                sender=app.config['ADMINS'][0],
@@ -157,22 +163,12 @@ def send_async_email(app, msg):
     with app.app_context():
         mail.send(msg)
 
-def get_completion_from_messages(messages, model="gpt-3.5-turbo", temperature=0):
-    response = openai.ChatCompletion.create(
-        model=model,
-        messages=messages,
-        temperature=temperature, # this is the degree of randomness of the model's output
-    )
-#     print(str(response.choices[0].message))
-    return response.choices[0].message["content"]
-def chat_gpt():
-    messages = [
-        {'role': 'system', 'content': 'You are witty and rude chatbot.'},
-        {'role': 'user',
-         'content': 'Summarize the scoreboard for a competition: kyle is in 1st place, jack is in second place, jason is in 33rd place'}]
-    response = get_completion_from_messages(messages, temperature=1)
-    #print(response)
-    test = 0
-    send_email("Leaderboard Updates",'kstrougo@gmail.com', response, test)
+def send_leaderboard_email(leaderboard_entries):
+    # Prepare the email body with the leaderboard entries
+    email_body = render_template('email/leaderboard_email.html', leaderboard=leaderboard_entries)
 
-#chat_gpt()#requires python3.7.1
+    # Send the email asynchronously
+    subject = '[Chi Chi] Leaderboard Report'
+    sender = app.config['ADMINS'][0]
+    recipients = ['kstrougo@gmail.com']
+    Thread(target=send_email, args=(subject, sender, recipients, "", email_body)).start()
