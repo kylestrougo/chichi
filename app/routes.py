@@ -9,8 +9,6 @@ from app.forms import RegistrationForm, EditProfileForm
 from datetime import datetime
 from app.models import Masters, updated, Draft
 import pandas as pd
-from wtforms.validators import InputRequired
-from wtforms import BooleanField
 
 
 @app.route('/')
@@ -113,7 +111,6 @@ def edit_profile():
 @login_required
 def leaderboard():
     leaderboard = get_leaderboard()
-    #print(leaderboard)
     return render_template('leaderboard.html', leaderboard=leaderboard)
 
 
