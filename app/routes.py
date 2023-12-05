@@ -34,7 +34,7 @@ def user(username):
     ##print(user)
     user_record = Draft.query.filter_by(user=user).first()
     user_record_dict = {
-        #"user_id": user_record.user_id,
+        # "user_id": user_record.user_id,
         "tier1": user_record.tier1,
         "tier2": user_record.tier2,
         "tier3": user_record.tier3,
@@ -42,7 +42,7 @@ def user(username):
         "tier5": user_record.tier5,
         "tier6": user_record.tier6
     }
-    #print(user_record)
+    # print(user_record)
 
     return render_template('user.html', user=user, user_record_dict=user_record_dict)
 
@@ -169,6 +169,7 @@ def draft(tier, username):
     return render_template('draft.html', title='Draft Lineup', form=form, players=filtered_players, tier=tier,
                            username=user)
 
+
 @app.route('/tier/<int:tier>/<username>', methods=['GET', 'POST'])
 @login_required
 def tier(tier, username):
@@ -204,7 +205,7 @@ def reset_password_request():
     form = ResetPasswordRequestForm()
     if form.validate_on_submit():
         user = db.session.scalar(db.select(User).where(User.email == form.email.data))
-        #user = db.session.query(User).filter(User.email == form.email.data).first()
+        # user = db.session.query(User).filter(User.email == form.email.data).first()
         if user:
             send_password_reset_email(user)
         flash('Check your email for the instructions to reset your password')
