@@ -147,8 +147,6 @@ def send_email(subject, sender, recipients, text_body, html_body):
 
 
 def send_password_reset_email(user):
-    x = get_leaderboard()
-    send_leaderboard_email(x)
     token = user.get_reset_password_token()
     send_email('[Chi Chi] Reset Your Password',
                sender=app.config['ADMINS'][0],
@@ -163,8 +161,10 @@ def send_async_email(app, msg):
     with app.app_context():
         mail.send(msg)
 
-def send_leaderboard_email(leaderboard_entries):
+def send_leaderboard_email():
     # Prepare the email body with the leaderboard entries
+    app.app_context().push()
+    leaderboard_entries = get_leaderboard()
     email_body = render_template('email/leaderboard_email.html', leaderboard=leaderboard_entries)
 
     # Send the email asynchronously

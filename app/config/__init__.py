@@ -9,9 +9,11 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     ADMINS = ['chi.chi.masters1@gmail.com']
-
     MAIL_SERVER = 'smtp.googlemail.com'
     MAIL_PORT = 587
     MAIL_USE_TLS = 1
     MAIL_USERNAME = 'chi.chi.masters1'
     MAIL_PASSWORD = 'nuyp jlke pbti dceb'
+    SERVER_NAME = '192.168.1.117:5000' # Replace with your server's hostname and port
+    APPLICATION_ROOT = '/' # Set if your app is hosted under a subpath
+    PREFERRED_URL_SCHEME = 'http'  # Set to 'https' if using HTTPS

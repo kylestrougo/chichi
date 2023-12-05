@@ -1,23 +1,20 @@
-from app import app
-import schedule
-from helper import update_data
-import time
-from multiprocessing import Process
+from app import app, scheduler, APScheduler
+from helper import update_data, send_leaderboard_email
+from apscheduler.triggers.cron import CronTrigger
+from datetime import datetime
 
-# Flag to ensure the scheduler is started only once
-scheduler_started = False
 
-# Define a function to run the scheduled task
-def run_scheduler():
-    schedule.every(15).seconds.do(update_data)
-    while True:
-        schedule.run_pending()
-        time.sleep(15)
-
-# Start the scheduler in a separate process
 if __name__ == '__main__':
-    if not scheduler_started:
-        scheduler_process = Process(target=run_scheduler)
-        scheduler_process.start()
-        scheduler_started = True
+    # Update Masters data ever 15 seconds
+    scheduler.add_job(id='masters_data', func=update_data, trigger='interval', seconds=15)
+
+    # Email leaderboard EOD
+    start_date = datetime(2023, 12, 1)
+    end_date = datetime(2023, 12, 5)
+    # This example schedules the job at 10 AM each day between the start and end dates
+    trigger = CronTrigger(hour=14, minute=44, second=30)
+    scheduler.add_job(id='email_leaderboard', func=send_leaderboard_email, trigger=trigger, start_date=start_date, end_date=end_date)
+
+    # start jobs and app
+    scheduler.start()
     app.run(debug=True, host='0.0.0.0')
