@@ -1,6 +1,6 @@
 from app import app, db
 from flask import render_template, flash, redirect, url_for, request
-from helper import scrape_data, update_player_by_tier, get_leaderboard, send_password_reset_email
+from helper import update_player_by_tier, get_leaderboard, send_password_reset_email
 from app.models import User, Post
 from app.forms import LoginForm, PostForm, PlayerSelectionForm, ResetPasswordRequestForm, ResetPasswordForm
 from flask_login import current_user, login_user, logout_user, login_required
@@ -17,10 +17,8 @@ from wtforms import BooleanField
 @app.route('/index')
 @login_required
 def index():
-    ##data = scrape_data()
     data = Masters.query.all()
     # print(data)
-
     # table_html = data.to_html(classes='table table-bordered', index=False)
     datetime = updated.query.all()
 

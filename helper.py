@@ -170,5 +170,5 @@ def send_leaderboard_email():
     # Send the email asynchronously
     subject = '[Chi Chi] Leaderboard Report'
     sender = app.config['ADMINS'][0]
-    recipients = ['kstrougo@gmail.com']
+    recipients = ['test@gmail.com']
     Thread(target=send_email, args=(subject, sender, recipients, "", email_body)).start()
