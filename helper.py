@@ -167,8 +167,10 @@ def send_leaderboard_email():
     leaderboard_entries = get_leaderboard()
     email_body = render_template('email/leaderboard_email.html', leaderboard=leaderboard_entries)
 
-    # Send the email asynchronously
+    all_users = User.query.with_entities(User.email).all()
+    recipients = [user.email for user in all_users]
+
     subject = '[Chi Chi] Leaderboard Report'
     sender = app.config['ADMINS'][0]
-    recipients = ['test@gmail.com']
+
     Thread(target=send_email, args=(subject, sender, recipients, "", email_body)).start()
