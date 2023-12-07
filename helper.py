@@ -108,6 +108,8 @@ def update_player_by_tier(user_id, tier, player_name):
         db.session.rollback()  # Handle any errors that occurred during commit
 
 
+from collections import defaultdict
+
 def get_leaderboard():
     leaderboard_data = db.session.query(User.username, Draft, db.func.sum(Masters.to_par).label('total_score')) \
         .join(Draft) \
@@ -118,26 +120,30 @@ def get_leaderboard():
               (Draft.tier5 == Masters.player) |
               (Draft.tier6 == Masters.player)) \
         .group_by(Draft.id) \
-        .order_by(desc('total_score')) \
         .all()
 
-    # Dictionary to store users' total scores
     scores = defaultdict(list)
+    current_rank = 0
+    prev_score = None
     for entry in leaderboard_data:
-        scores[entry.total_score].append(entry)
+        total_score = entry.total_score
+        predicted_score = entry.Draft.single_number
+        score_difference = abs(total_score - predicted_score)
 
+        score = (total_score, score_difference)
+        scores[score].append(entry)
+
+    sorted_scores = sorted(scores.keys(), key=lambda x: (x[0], x[1]))  # Sort by total_score and closest single number
     leaderboard_entries = []
     rank = 1
-    for total_score, users in sorted(scores.items(), reverse=False):
-        for entry in users:
+    for score in sorted_scores:
+        for entry in scores[score]:
             user_profile_url = url_for('user', username=entry.username)
-            user_entry = f"<tr><td>{rank}</td><td><a href='{user_profile_url}'>{entry.username}</a></td><td>{entry.Draft.tier1}</td><td>{entry.Draft.tier2}</td><td>{entry.Draft.tier3}</td><td>{entry.Draft.tier4}</td><td>{entry.Draft.tier5}</td><td>{entry.Draft.tier6}</td><td>{total_score}</td></tr>"
+            user_entry = f"<tr><td>{rank}</td><td><a href='{user_profile_url}'>{entry.username}</a></td><td>{entry.Draft.tier1}</td><td>{entry.Draft.tier2}</td><td>{entry.Draft.tier3}</td><td>{entry.Draft.tier4}</td><td>{entry.Draft.tier5}</td><td>{entry.Draft.tier6}</td><td>{entry.Draft.single_number}</td><td>{entry.total_score}</td></tr>"
             leaderboard_entries.append(user_entry)
-
-        rank += 1  # Increment rank by 1 after processing users with the same score
+            rank += 1
 
     return leaderboard_entries
-
 
 def send_email(subject, sender, recipients, text_body, html_body):
     msg = Message(subject, sender=sender, recipients=recipients)
