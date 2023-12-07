@@ -49,16 +49,39 @@ def scrape_data():
 
     df = pd.DataFrame(data, columns=headers)
 
+    # Your existing code for data cleaning and formatting
     df.drop(columns=['FedExCup Pts', 'Official Money'], inplace=True)
     df['Index'] = df.index
     df.set_index('Index', inplace=True)
+    df['Player'] = df['Player'].str.replace('\(a\)', '', regex=True)
+    df = df[df['Player'] != 'None']
+    df = df.dropna(subset=['Player'], how='any')
+    df = df[df['Player'].astype(str).str.strip() != '']  # Drop rows with empty strings in 'Player' column
+    def is_non_numeric_or_blank(s):
+        return not bool(re.match(r'^\+?-?\d*\.?\d*$', str(s)))
 
-    df.replace('', np.nan, inplace=True)
-    df.dropna(axis=0, how='any', inplace=True)
-    df['Player'] = df['Player'].str.replace(' \(a\)', '', regex=True)
-    df = df[~df['Pos'].str.contains('CUT')]
-    columns_to_replace = ['R1', 'R2', 'R3', 'R4', 'To Par']
-    df[columns_to_replace] = df[columns_to_replace].replace('E', '0')
+    columns_to_check = ['R1', 'R2', 'R3', 'R4', 'To Par']
+    df[columns_to_check] = df[columns_to_check].fillna('0')
+
+    for col in columns_to_check:
+        df[col] = df[col].apply(lambda x: '0' if pd.isna(x) or is_non_numeric_or_blank(x) else x)
+
+    # Updated section to handle empty strings and '-' cases
+    for index, row in df.iterrows():
+        for col in columns_to_check:
+            val = row[col]
+            if isinstance(val, str) and val.strip():  # Check for non-empty strings
+                if val.startswith('+'):
+                    val = int(val[1:])  # Convert to positive integer
+                elif val.startswith('-') and val[1:]:  # Check for non-empty string after '-'
+                    val = -int(val[1:])  # Convert to negative integer
+                elif val.isdigit() or (val[1:].isdigit() and val[0] == '-'):
+                    val = int(val)  # Convert to integer if it's a digit or negative digit
+
+                # Update the value back to the DataFrame
+                df.at[index, col] = val
+            else:
+                df.at[index, col] = 0  # Replace empty strings with 0
 
     return df
 
@@ -72,13 +95,6 @@ def update_data():
     # Save the new data with 'to_par' values as integers
     for index, row in scraped_data.iterrows():
         to_par = row['To Par']
-        # Convert string representations of 'to_par' to integers
-        if to_par.startswith('+'):
-            to_par = int(to_par[1:])  # Convert to positive integer
-        elif to_par.startswith('-'):
-            to_par = -int(to_par[1:])  # Convert to negative integer
-        else:
-            to_par = int(to_par)  # Convert to integer if no sign is present
 
         entry = Masters(
             pos=str(row['Pos']),
@@ -146,6 +162,7 @@ def get_leaderboard():
         total_score = entry.total_score
         predicted_score = entry.Draft.single_number
         top_player_to_par = Masters.query.order_by(Masters.pos).first().to_par  # Fetching top-ranked player's "To Par"
+        print(top_player_to_par)
         score_difference = abs((top_player_to_par) - (predicted_score))
 
         score = (total_score, score_difference)
