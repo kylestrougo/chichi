@@ -187,7 +187,7 @@ def tier(tier, username):
 
         update_player_by_tier(user.id, tier, selected_player)
 
-        return redirect(url_for('tie_breaker', username=current_user))
+        return redirect(url_for('user', username=current_user))
 
     return render_template('draft.html', title='Draft Lineup', form=form, players=filtered_players, tier=tier,
                            username=current_user)

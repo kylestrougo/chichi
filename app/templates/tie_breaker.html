@@ -1,12 +1,126 @@
 <!-- draft.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>For Tie Breakers</title>
-</head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Add viewport meta tag for responsiveness -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #2c442b;
+        }
+
+        h1 {
+            text-align: center;
+            background-color: #48823a;
+            color: #ffcb05;
+            padding: 20px; /* Adjust padding for better touch interaction on mobile */
+            margin: 0;
+            font-size: 28px; /* Smaller font size for better readability on mobile */
+        }
+
+        .form-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Optional: Additional styling for form elements */
+        form {
+            text-align: center; /* Center-align form elements */
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%; /* Make the table fill the container width */
+            margin: 10px 0; /* Adjusted margin for mobile */
+            background-color: #fff;
+        }
+
+        th, td {
+            border: 1px solid #1a351d;
+            padding: 10px; /* Decreased padding for better touch interaction */
+            text-align: center;
+            font-size: 20px; /* Smaller font size for better readability on mobile */
+        }
+
+        th {
+            background-color: #48823a;
+            color: #ffcb05;
+        }
+
+        tr:nth-child(even) {
+            background-color: #e4f1d3;
+        }
+
+        a {
+            color: #ffcb05;
+            text-decoration: none;
+            font-size: 19px; /* Smaller font size for better touch interaction and readability on mobile */
+        }
+
+        a:hover {
+            color: #ffa500;
+        }
+
+        button:hover {
+            background-color: #ffa500;
+            color: #ffffff;
+        }
+        .pass {
+        background-color: #48823a;
+        padding: 20px;
+        border-radius: 28px;
+    }
+
+    </style>
+<style>
+    /* Additional CSS styles */
+
+    input[type="radio"] {
+        /* Define custom size */
+        width: 20px;
+        height: 20px;
+    }
+    .submit-button {
+        padding: 15px;
+        width: 100%; /* Button width extends to full width */
+        margin: 15px 0;
+        border: none;
+        background-color: #ffcb05;
+        color: #2c442b;
+        font-size: 20px;
+        border-radius: 5px;
+    }
+
+
+    .form {
+        width: 70%; /* Reduced form width */
+        margin: 0 auto; /* Centering the form container */
+        background-color: #48823a;
+        padding: 15px;
+        margin-top: 10px;
+        border-radius: 28px;
+    }
+
+    /* Apply the width change to the container for screens smaller than 765px (phones) */
+    @media (max-width: 765px) {
+        .form {
+            width: 100%; /* Adjust the width as needed */
+            padding: 0px;
+            margin: 0 auto;
+        }
+    }
+</style>
 <body>
     <h1>Predict your player's collective To Par</h1>
+    <hr>
+    <div class="pass">
+        <div class="form-container">
     <form method="POST" action="">
         {{ form.hidden_tag() }}
         <p>
@@ -16,7 +130,9 @@
                 <span style="color: red;">{{ error }}</span><br>
             {% endfor %}
         </p>
-        <p><input type="submit" value="Submit"></p>
+        <p><button type="submit" class="submit-button">Submit</button>
     </form>
+        </div>
+        </div>
 </body>
 </html>

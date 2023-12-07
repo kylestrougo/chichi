@@ -73,5 +73,5 @@ class ResetPasswordForm(FlaskForm):
     submit = SubmitField('Request Password Reset')
 
 class TieBreakerForm(FlaskForm):
-    single_number = IntegerField('Single Number', validators=[DataRequired(), NumberRange(min=1)])  # Adjust validators as needed
+    single_number = IntegerField('Insert a Score', validators=[DataRequired(), NumberRange(min=1)], render_kw={"type": "number"})
     submit = SubmitField('Save Number')
