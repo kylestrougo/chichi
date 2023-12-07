@@ -1,9 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import numpy as np
 from datetime import datetime
 from flask_mail import Message
 from sqlalchemy import desc
+import re
 from app import mail
 from flask import url_for
 from flask_login import current_user
@@ -13,6 +15,7 @@ from sqlalchemy.exc import IntegrityError
 from flask import render_template
 from threading import Thread
 from collections import defaultdict
+from sqlalchemy import func, case, cast, Integer
 
 def scrape_data():
     # Replace 'url' with the URL of the webpage containing the table
@@ -43,16 +46,19 @@ def scrape_data():
             row_data = [col.text.strip() for col in cols]
             data.append(row_data)
 
-    # Print the headers and a sample row to verify the data
-    # print("Headers:", headers)
-    # if data:
-    #   print("Sample Row:", data[0])
 
     df = pd.DataFrame(data, columns=headers)
 
     df.drop(columns=['FedExCup Pts', 'Official Money'], inplace=True)
     df['Index'] = df.index
     df.set_index('Index', inplace=True)
+
+    df.replace('', np.nan, inplace=True)
+    df.dropna(axis=0, how='any', inplace=True)
+    df['Player'] = df['Player'].str.replace(' \(a\)', '', regex=True)
+    df = df[~df['Pos'].str.contains('CUT')]
+    columns_to_replace = ['R1', 'R2', 'R3', 'R4', 'To Par']
+    df[columns_to_replace] = df[columns_to_replace].replace('E', '0')
 
     return df
 
@@ -62,8 +68,18 @@ def update_data():
     # Delete existing data
     app.app_context().push()
     db.session.query(Masters).delete()
-    # Save the new data
+
+    # Save the new data with 'to_par' values as integers
     for index, row in scraped_data.iterrows():
+        to_par = row['To Par']
+        # Convert string representations of 'to_par' to integers
+        if to_par.startswith('+'):
+            to_par = int(to_par[1:])  # Convert to positive integer
+        elif to_par.startswith('-'):
+            to_par = -int(to_par[1:])  # Convert to negative integer
+        else:
+            to_par = int(to_par)  # Convert to integer if no sign is present
+
         entry = Masters(
             pos=str(row['Pos']),
             player=row['Player'],
@@ -71,11 +87,12 @@ def update_data():
             r2=str(row['R2']),
             r3=str(row['R3']),
             r4=str(row['R4']),
-            to_par=str(row['To Par'])
+            to_par=to_par  # Store the converted value as integer in the DB
         )
         db.session.add(entry)
 
     db.session.commit()
+
 
     d = datetime.now()
     d = d.strftime("%A, %b %d at %I:%M %p")
@@ -111,6 +128,7 @@ def update_player_by_tier(user_id, tier, player_name):
 from collections import defaultdict
 
 def get_leaderboard():
+    # Fetching leaderboard data
     leaderboard_data = db.session.query(User.username, Draft, db.func.sum(Masters.to_par).label('total_score')) \
         .join(Draft) \
         .join(Masters, (Draft.tier1 == Masters.player) |
@@ -122,18 +140,19 @@ def get_leaderboard():
         .group_by(Draft.id) \
         .all()
 
+    # Collecting scores and users
     scores = defaultdict(list)
-    current_rank = 0
-    prev_score = None
     for entry in leaderboard_data:
         total_score = entry.total_score
         predicted_score = entry.Draft.single_number
-        score_difference = abs(total_score - predicted_score)
+        top_player_to_par = Masters.query.order_by(Masters.pos).first().to_par  # Fetching top-ranked player's "To Par"
+        score_difference = abs((top_player_to_par) - (predicted_score))
 
         score = (total_score, score_difference)
         scores[score].append(entry)
 
-    sorted_scores = sorted(scores.keys(), key=lambda x: (x[0], x[1]))  # Sort by total_score and closest single number
+    # Sorting the scores
+    sorted_scores = sorted(scores.keys(), key=lambda x: (x[0], x[1]))  # Sort by total_score and closest predicted score to top-ranked player's "To Par"
     leaderboard_entries = []
     rank = 1
     for score in sorted_scores:
@@ -144,6 +163,8 @@ def get_leaderboard():
             rank += 1
 
     return leaderboard_entries
+
+
 
 def send_email(subject, sender, recipients, text_body, html_body):
     msg = Message(subject, sender=sender, recipients=recipients)
