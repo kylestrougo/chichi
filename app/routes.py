@@ -159,7 +159,7 @@ def draft(tier, username):
             return redirect(url_for('draft', tier=next_tier, username=user))
         else:
             # Draft completed, redirect to completed profile
-            return redirect(url_for('user', username=user))
+            return redirect(url_for('tie_breaker', username=user))
 
     return render_template('draft.html', title='Draft Lineup', form=form, players=filtered_players, tier=tier,
                            username=user)
