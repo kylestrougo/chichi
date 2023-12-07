@@ -9,6 +9,12 @@ from wtforms.validators import DataRequired, Length
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
+
+    def validate_username(form, field):
+        if field.data:
+            field.data = field.data.lower()  # Convert username to lowercase
+            # Perform other validations if needed
+
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
