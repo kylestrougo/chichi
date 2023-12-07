@@ -94,6 +94,7 @@ class Draft(db.Model):
     tier4 = db.Column(db.String(64))
     tier5 = db.Column(db.String(64))
     tier6 = db.Column(db.String(64))
+    single_number = db.Column(db.Integer)
 
     def __repr__(self):
-        return f"User: {self.user_id}, Tier1: {self.tier1}, Tier2: {self.tier2}, Tier3: {self.tier3}, Tier4: {self.tier4}, Tier5: {self.tier5}, Tier6: {self.tier6}"
+        return f"User ID: {self.user_id}, Single Number: {self.single_number}, Tier1: {self.tier1}, Tier2: {self.tier2}, Tier3: {self.tier3}, Tier4: {self.tier4}, Tier5: {self.tier5}, Tier6: {self.tier6}"

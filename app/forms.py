@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, HiddenField, RadioField
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, HiddenField, RadioField, \
+    IntegerField
+from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, NumberRange
 from app.models import User
 from wtforms import StringField, TextAreaField, SubmitField
 from wtforms.validators import DataRequired, Length
@@ -70,3 +71,7 @@ class ResetPasswordForm(FlaskForm):
     password2 = PasswordField(
         'Repeat Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Request Password Reset')
+
+class TieBreakerForm(FlaskForm):
+    single_number = IntegerField('Single Number', validators=[DataRequired(), NumberRange(min=1)])  # Adjust validators as needed
+    submit = SubmitField('Save Number')

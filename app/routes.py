@@ -5,7 +5,7 @@ from app.models import User, Post
 from app.forms import LoginForm, PostForm, PlayerSelectionForm, ResetPasswordRequestForm, ResetPasswordForm
 from flask_login import current_user, login_user, logout_user, login_required
 from urllib.parse import urlsplit
-from app.forms import RegistrationForm, EditProfileForm
+from app.forms import RegistrationForm, EditProfileForm, TieBreakerForm
 from datetime import datetime
 from app.models import Masters, updated, Draft
 import pandas as pd
@@ -187,10 +187,29 @@ def tier(tier, username):
 
         update_player_by_tier(user.id, tier, selected_player)
 
-        return redirect(url_for('user', username=current_user))
+        return redirect(url_for('tie_breaker', username=current_user))
 
     return render_template('draft.html', title='Draft Lineup', form=form, players=filtered_players, tier=tier,
                            username=current_user)
+
+
+@app.route('/tie_breaker/<username>', methods=['GET', 'POST'])
+@login_required
+def tie_breaker(username):
+    form = TieBreakerForm()
+    if form.validate_on_submit():
+        user_draft = Draft.query.filter_by(user_id=current_user.id).first()
+        if user_draft is None:
+            user_draft = Draft(user_id=current_user.id)
+
+        user_draft.single_number = form.single_number.data
+        setattr(user_draft, f'single_number{form.single_number.data}', form.single_number.data)
+
+        db.session.add(user_draft)
+        db.session.commit()
+        return redirect(url_for('user', username=current_user))
+
+    return render_template('tie_breaker.html', form=form, username=current_user)
 
 
 @app.route('/reset_password_request', methods=['GET', 'POST'])

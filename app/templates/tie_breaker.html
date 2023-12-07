@@ -1,0 +1,22 @@
+<!-- draft.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>For Tie Breakers</title>
+</head>
+<body>
+    <h1>Predict your player's collective To Par</h1>
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.single_number.label }}<br>
+            {{ form.single_number(size=20) }}<br>
+            {% for error in form.single_number.errors %}
+                <span style="color: red;">{{ error }}</span><br>
+            {% endfor %}
+        </p>
+        <p><input type="submit" value="Submit"></p>
+    </form>
+</body>
+</html>
