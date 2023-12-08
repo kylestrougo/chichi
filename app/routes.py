@@ -10,6 +10,21 @@ from datetime import datetime
 from app.models import Masters, updated, Draft
 import pandas as pd
 
+access_trigger = 0
+revoke_trigger = 0
+
+# Function to grant access
+def grant_access_to_other_user_data():
+    global access_trigger
+    access_trigger = 1
+    print("Access trigger: ", access_trigger)
+    print("Access granted at:", datetime.now())
+
+# Function to revoke access
+def revoke_access_to_drafting():
+    revoke_trigger = 0
+    print("Access revoked at:", datetime.now())
+
 
 @app.route('/')
 @app.route('/index')
@@ -110,8 +125,14 @@ def edit_profile():
 @app.route('/leaderboard')
 @login_required
 def leaderboard():
-    leaderboard = get_leaderboard()
-    return render_template('leaderboard.html', leaderboard=leaderboard)
+    global access_trigger
+    print("Access trigger: ", access_trigger)
+    if access_trigger  == 1:
+        leaderboard = get_leaderboard()
+        return render_template('leaderboard.html', leaderboard=leaderboard)
+    else:
+        flash("Access to this page is granted upon Tournament Start")
+        return redirect(url_for('index'))
 
 
 @app.route('/smack', methods=['GET', 'POST'])
