@@ -15,6 +15,12 @@
         height: 100px;
         line-height: 80px;
     }
+.text-container {
+            white-space: nowrap; /* Prevent text from wrapping */
+            overflow: hidden; /* Hide overflow if text exceeds container */
+            text-overflow: ellipsis; /* Show ellipsis (...) if text overflows */
+            font-size: 20px; /* Set initial font size */
+        }
 
     .leaderboard-text {
         font-size: 24px;
@@ -72,7 +78,7 @@
       <th>Tier 4</th>
       <th>Tier 5</th>
       <th>Tier 6</th>
-      <th>Tiebreaker<br>1st Place Score</th>
+      <th>Tiebreaker</th>
       <th>Total Score</th>
     </tr>
   </thead>

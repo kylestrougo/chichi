@@ -1,14 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Add viewport meta tag for responsiveness -->
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chi Chi Leaderboard</title>
-
-<body>
-<style>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <style>
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
@@ -20,23 +17,32 @@
             text-align: center;
             background-color: #48823a;
             color: #ffcb05;
-            padding: 20px; /* Adjust padding for better touch interaction on mobile */
+            padding: 20px;
             margin: 0;
-            font-size: 28px; /* Smaller font size for better readability on mobile */
+            font-size: 28px;
+        }
+
+        .table-container {
+            background-color: #184d36; /* Dark green background color */
+            padding: 20px;
+            overflow-x: auto; /* Enable horizontal scrolling if needed */
         }
 
         table {
             border-collapse: collapse;
-            width: 100%; /* Make the table fill the container width */
-            margin: 10px 0; /* Adjusted margin for mobile */
+            width: 100%; /* Full width on larger screens */
+            max-width: 100%; /* Limit the maximum width */
             background-color: #fff;
         }
 
         th, td {
             border: 1px solid #1a351d;
-            padding: 10px; /* Decreased padding for better touch interaction */
+            padding: 14px; /* Adjusted padding */
             text-align: center;
-            font-size: 20px; /* Smaller font size for better readability on mobile */
+            font-size: 20px; /* Adjust the font size as desired */
+            white-space: nowrap; /* Prevent text wrapping within cells */
+            overflow: hidden; /* Hide content exceeding cell width */
+            text-overflow: ellipsis; /* Show ellipsis (...) for overflow */
         }
 
         th {
@@ -51,7 +57,6 @@
         a {
             color: #ffcb05;
             text-decoration: none;
-            font-size: 19px; /* Smaller font size for better touch interaction and readability on mobile */
         }
 
         a:hover {
@@ -63,70 +68,43 @@
             color: #ffffff;
         }
 
+        /* Adjustments for smaller screens (phones) */
+        @media only screen and (max-width: 600px) {
+            table {
+                width: 100%;
+            }
+
+            th, td {
+                font-size: 16px; /* Adjust the font size as desired */
+                padding: 10px; /* Adjusted padding */
+            }
+        }
+
     </style>
-<style>
-    /* Additional CSS styles */
-
-    input[type="radio"] {
-        /* Define custom size */
-        width: 20px;
-        height: 20px;
-    }
-    .submit-button {
-        padding: 15px;
-        width: 100%; /* Button width extends to full width */
-        margin: 15px 0;
-        border: none;
-        background-color: #ffcb05;
-        color: #2c442b;
-        font-size: 20px;
-        border-radius: 5px;
-    }
-
-
-    .form {
-        width: 70%; /* Reduced form width */
-        margin: 0 auto; /* Centering the form container */
-        background-color: #48823a;
-        padding: 15px;
-        margin-top: 10px;
-        border-radius: 28px;
-    }
-
-    /* Apply the width change to the container for screens smaller than 765px (phones) */
-    @media (max-width: 765px) {
-        .form {
-            width: 100%; /* Adjust the width as needed */
-            padding: 0px;
-            margin: 0 auto;
-        }
-        table, table td, table th {
-            font-size: 10px !important; /* Further decrease the font size for mobile screens */
-        }
-    }
-</style>
-
-<div class="table-container">
-     <table border="1">
-  <thead>
-    <tr><th>Rank</th>
-      <th>Username</th>
-      <th>Tier 1</th>
-      <th>Tier 2</th>
-      <th>Tier 3</th>
-      <th>Tier 4</th>
-      <th>Tier 5</th>
-      <th>Tier 6</th>
-        <th>Tiebreaker<br>1st Place Score</th>
-      <th>Total Score</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for entry in leaderboard %}
-    {{ entry | safe }}
-    {% endfor %}
-  </tbody>
-</table>
-</div>
+</head>
+<body>
+    <div class="table-container">
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th style="max-width: 120px;">Username</th> <!-- Adjust the max-width as needed -->
+                    <th>Tier 1</th>
+                    <th>Tier 2</th>
+                    <th>Tier 3</th>
+                    <th>Tier 4</th>
+                    <th>Tier 5</th>
+                    <th>Tier 6</th>
+                    <th>Tiebreaker</th>
+                    <th>Total Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in leaderboard %}
+                {{ entry | safe }}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>

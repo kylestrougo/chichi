@@ -162,7 +162,6 @@ def get_leaderboard():
         total_score = entry.total_score
         predicted_score = entry.Draft.single_number
         top_player_to_par = Masters.query.order_by(Masters.pos).first().to_par  # Fetching top-ranked player's "To Par"
-        print(top_player_to_par)
         score_difference = abs((top_player_to_par) - (predicted_score))
 
         score = (total_score, score_difference)
@@ -175,7 +174,7 @@ def get_leaderboard():
     for score in sorted_scores:
         for entry in scores[score]:
             user_profile_url = url_for('user', username=entry.username)
-            user_entry = f"<tr><td>{rank}</td><td><a href='{user_profile_url}'>{entry.username}</a></td><td>{entry.Draft.tier1}</td><td>{entry.Draft.tier2}</td><td>{entry.Draft.tier3}</td><td>{entry.Draft.tier4}</td><td>{entry.Draft.tier5}</td><td>{entry.Draft.tier6}</td><td>{entry.Draft.single_number}</td><td>{entry.total_score}</td></tr>"
+            user_entry = f"<tr><td>{rank}</td><td><a href='{user_profile_url}' style=\"color: blue; text-decoration: underline;\">{entry.username}</a></td><td>{entry.Draft.tier1}</td><td>{entry.Draft.tier2}</td><td>{entry.Draft.tier3}</td><td>{entry.Draft.tier4}</td><td>{entry.Draft.tier5}</td><td>{entry.Draft.tier6}</td><td>{entry.Draft.single_number}</td><td>{entry.total_score}</td></tr>"
             leaderboard_entries.append(user_entry)
             rank += 1
 
