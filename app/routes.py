@@ -128,7 +128,7 @@ def edit_profile():
 def leaderboard():
     global access_trigger
     if access_trigger  == 1:
-        leaderboard = get_leaderboard()
+        leaderboard, x = get_leaderboard()
         return render_template('leaderboard.html', leaderboard=leaderboard)
     else:
         flash("Access to this page is granted upon Tournament Start")

@@ -170,15 +170,18 @@ def get_leaderboard():
     # Sorting the scores
     sorted_scores = sorted(scores.keys(), key=lambda x: (x[0], x[1]))  # Sort by total_score and closest predicted score to top-ranked player's "To Par"
     leaderboard_entries = []
+    leaderboard_email = []
     rank = 1
     for score in sorted_scores:
         for entry in scores[score]:
             user_profile_url = url_for('user', username=entry.username)
-            user_entry = f"<tr><td>{rank}</td><td><a href='{user_profile_url}' style=\"color: blue; text-decoration: underline;\">{entry.username}</a></td><td>{entry.Draft.tier1}</td><td>{entry.Draft.tier2}</td><td>{entry.Draft.tier3}</td><td>{entry.Draft.tier4}</td><td>{entry.Draft.tier5}</td><td>{entry.Draft.tier6}</td><td>{entry.Draft.single_number}</td><td>{entry.total_score}</td></tr>"
+            user_entry = f"<tr><td>{rank}</td><td><a href='{user_profile_url}' style=\"color: blue; max-width: 200px; text-decoration: underline; font-size: 11px;\">{entry.username}</a></td><td>{entry.Draft.tier1}</td><td>{entry.Draft.tier2}</td><td>{entry.Draft.tier3}</td><td>{entry.Draft.tier4}</td><td>{entry.Draft.tier5}</td><td>{entry.Draft.tier6}</td><td>{entry.Draft.single_number}</td><td>{entry.total_score}</td></tr>"
+            user_email = f"<tr><td>{rank}</td><td><a href='{user_profile_url}' style=\"color: blue; max-width: 200px; text-decoration: underline; font-size: 14px;\">{entry.username}</a></td><td>{entry.Draft.single_number}</td><td>{entry.total_score}</td></tr>"
             leaderboard_entries.append(user_entry)
+            leaderboard_email.append(user_email)
             rank += 1
 
-    return leaderboard_entries
+    return leaderboard_entries, leaderboard_email
 
 
 
@@ -207,8 +210,9 @@ def send_async_email(app, msg):
 def send_leaderboard_email():
     # Prepare the email body with the leaderboard entries
     app.app_context().push()
-    leaderboard_entries = get_leaderboard()
-    email_body = render_template('email/leaderboard_email.html', leaderboard=leaderboard_entries)
+    x, leaderboard_entries = get_leaderboard()
+    masters = Masters.query.all()
+    email_body = render_template('email/leaderboard_email.html', leaderboard=leaderboard_entries, masters=masters)
 
     all_users = User.query.with_entities(User.email).all()
     recipients = [user.email for user in all_users]

@@ -12,7 +12,7 @@ if __name__ == '__main__':
     # ----------------- Leaderboard Report every EOD -----------------
     start_date = datetime(2023, 12, 1)
     end_date = datetime(2024, 1, 1)
-    trigger = CronTrigger(hour=16, minute=54, second=0)
+    trigger = CronTrigger(hour=17, minute=23, second=0)
     scheduler.add_job(id='email_leaderboard', func=send_leaderboard_email, trigger=trigger, start_date=start_date,end_date=end_date)
 
     # ----------------- Grant Access to other User's Data at -----------------
