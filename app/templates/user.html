@@ -110,7 +110,7 @@
 <div class="table-container">
     <table>
         <tr>
-            {% if user == current_user %}
+            {% if user == current_user and revoke_trigger == 0 %}
             <th>
                 Tier
                 <br>

@@ -17,12 +17,12 @@ revoke_trigger = 0
 def grant_access_to_other_user_data():
     global access_trigger
     access_trigger = 1
-    print("Access trigger: ", access_trigger)
     print("Access granted at:", datetime.now())
 
 # Function to revoke access
 def revoke_access_to_drafting():
-    revoke_trigger = 0
+    global revoke_trigger
+    revoke_trigger = 1
     print("Access revoked at:", datetime.now())
 
 
@@ -41,6 +41,8 @@ def index():
 @app.route('/user/<username>')
 @login_required
 def user(username):
+    global revoke_trigger
+    print("revoke_trigger:  ", revoke_trigger)
     user = User.query.filter_by(username=username).first_or_404()
     ##print(user)
     user_record = Draft.query.filter_by(user=user).first()
@@ -55,7 +57,7 @@ def user(username):
     }
     # print(user_record)
 
-    return render_template('user.html', user=user, user_record_dict=user_record_dict)
+    return render_template('user.html', user=user, user_record_dict=user_record_dict, revoke_trigger=revoke_trigger)
 
 
 @app.route('/login', methods=['GET', 'POST'])
