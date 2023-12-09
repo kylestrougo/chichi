@@ -89,6 +89,7 @@
         <hr>
         {% for post in posts %}
             <form class="post">
+                {% if access_trigger == 1 %}
                 <table>
                     <tr valign="top">
                         <td><img src="{{ post.author.avatar(36) }}"></td>
@@ -100,6 +101,16 @@
                         </td>
                     </tr >
                 </table>
+                {% else %}
+                <table>
+                    <tr valign="top">
+                        <td><img src="{{ post.author.avatar(36) }}"></td>
+                        <td style="text-align: left;">
+                            {{ post.author.username }} : {{ post.body }}
+                        </td>
+                    </tr >
+                </table>
+                {% endif %}
             </form>
         <hr>
         {% endfor %}

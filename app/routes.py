@@ -42,7 +42,6 @@ def index():
 @login_required
 def user(username):
     global revoke_trigger
-    print("revoke_trigger:  ", revoke_trigger)
     user = User.query.filter_by(username=username).first_or_404()
     ##print(user)
     user_record = Draft.query.filter_by(user=user).first()
@@ -128,7 +127,6 @@ def edit_profile():
 @login_required
 def leaderboard():
     global access_trigger
-    print("Access trigger: ", access_trigger)
     if access_trigger  == 1:
         leaderboard = get_leaderboard()
         return render_template('leaderboard.html', leaderboard=leaderboard)
@@ -140,6 +138,7 @@ def leaderboard():
 @app.route('/smack', methods=['GET', 'POST'])
 @login_required
 def smack():
+    global access_trigger
     form = PostForm()
     if form.validate_on_submit():
         post = Post(body=form.post.data, author=current_user)
@@ -151,7 +150,7 @@ def smack():
     posts = Post.query.order_by(Post.timestamp.desc()).all()
 
     return render_template("smack.html", title='Smack Board', form=form,
-                           posts=posts)
+                           posts=posts, access_trigger=access_trigger)
 
 
 @app.route('/draft/<int:tier>/<username>', methods=['GET', 'POST'])

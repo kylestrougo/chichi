@@ -124,7 +124,7 @@
         {% for key, value in user_record_dict.items() %}
             <tr>
                 <td>
-                    {% if user == current_user %}
+                    {% if user == current_user and revoke_trigger == 0 %}
                     <a href="{{ url_for('tier', tier=loop.index, username=current_user) }}" style="color: blue; text-decoration: underline;">Tier {{ loop.index }}</a>
                     {% else %}
                     <a style="color: black">Tier {{ loop.index }}</a>
