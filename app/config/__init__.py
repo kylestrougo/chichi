@@ -14,6 +14,6 @@ class Config(object):
     MAIL_USE_TLS = 1
     MAIL_USERNAME = 'chi.chi.masters1'
     MAIL_PASSWORD = 'nuyp jlke pbti dceb'
-    SERVER_NAME = '192.168.1.117:5000' # Replace with your server's hostname and port
+    #SERVER_NAME = '192.168.1.117:5000' # Replace with your server's hostname and port
     APPLICATION_ROOT = '/' # Set if your app is hosted under a subpath
     PREFERRED_URL_SCHEME = 'http'  # Set to 'https' if using HTTPS

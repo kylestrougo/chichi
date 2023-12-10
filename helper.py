@@ -1,21 +1,17 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
-import numpy as np
 from datetime import datetime
 from flask_mail import Message
-from sqlalchemy import desc
 import re
 from app import mail
 from flask import url_for
-from flask_login import current_user
 from app import db, app
 from app.models import User, Masters, updated, Draft
 from sqlalchemy.exc import IntegrityError
 from flask import render_template
 from threading import Thread
 from collections import defaultdict
-from sqlalchemy import func, case, cast, Integer
 
 def scrape_data():
     # Replace 'url' with the URL of the webpage containing the table
@@ -141,8 +137,6 @@ def update_player_by_tier(user_id, tier, player_name):
         db.session.rollback()  # Handle any errors that occurred during commit
 
 
-from collections import defaultdict
-
 def get_leaderboard():
     # Fetching leaderboard data
     leaderboard_data = db.session.query(User.username, Draft, db.func.sum(Masters.to_par).label('total_score')) \
@@ -175,8 +169,8 @@ def get_leaderboard():
     for score in sorted_scores:
         for entry in scores[score]:
             user_profile_url = url_for('user', username=entry.username)
-            user_entry = f"<tr><td>{rank}</td><td><a href='{user_profile_url}' style=\"color: blue; max-width: 200px; text-decoration: underline; font-size: 11px;\">{entry.username}</a></td><td>{entry.Draft.tier1}</td><td>{entry.Draft.tier2}</td><td>{entry.Draft.tier3}</td><td>{entry.Draft.tier4}</td><td>{entry.Draft.tier5}</td><td>{entry.Draft.tier6}</td><td>{entry.Draft.single_number}</td><td>{entry.total_score}</td></tr>"
-            user_email = f"<tr><td>{rank}</td><td><a href='{user_profile_url}' style=\"color: blue; max-width: 200px; text-decoration: underline; font-size: 14px;\">{entry.username}</a></td><td>{entry.Draft.single_number}</td><td>{entry.total_score}</td></tr>"
+            user_entry = f"<tr><td>{rank}</td><td><a href='{user_profile_url}' style=\"color: blue; max-width: 200px; text-decoration: underline;\">{entry.username}</a></td><td>{entry.Draft.tier1}</td><td>{entry.Draft.tier2}</td><td>{entry.Draft.tier3}</td><td>{entry.Draft.tier4}</td><td>{entry.Draft.tier5}</td><td>{entry.Draft.tier6}</td><td>{entry.Draft.single_number}</td><td>{entry.total_score}</td></tr>"
+            user_email = f"<tr><td>{rank}</td><td><a href='{user_profile_url}' style=\"color: blue; max-width: 200px; text-decoration: underline;\">{entry.username}</a></td><td>{entry.Draft.single_number}</td><td>{entry.total_score}</td></tr>"
             leaderboard_entries.append(user_entry)
             leaderboard_email.append(user_email)
             rank += 1
