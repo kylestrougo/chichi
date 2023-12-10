@@ -23,10 +23,15 @@ def tournament_start():
 @login_required
 def index():
     data = Masters.query.all()
-    #for records that aren't "CUT": 0 --> E
+    for entry in data:
+        if entry.pos not in ("CUT","W/D"):
+            # Replace '0' with 'E' for r1, r2, r3, r4 for active player's scores
+            entry.r1 = 'E' if entry.r1 == '0' else entry.r1
+            entry.r2 = 'E' if entry.r2 == '0' else entry.r2
+            entry.r3 = 'E' if entry.r3 == '0' else entry.r3
+            entry.r4 = 'E' if entry.r4 == '0' else entry.r4
 
     datetime = updated.query.all()
-
     return render_template('index.html', title='Home', data=data, datetime=datetime)
 
 
