@@ -7,7 +7,7 @@ from datetime import datetime
 
 if __name__ == '__main__':
     # ----------------- Tournament Dates -----------------
-    start_date = datetime(2023, 12, 10, 16, 14, 10)
+    start_date = datetime(2023, 12, 10, 17, 2, 40)
     end_date = datetime(2023, 12, 25, 17, 7, 30)
 
     # ----------------- Masters data every 30 seconds -----------------

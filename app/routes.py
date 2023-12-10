@@ -46,7 +46,7 @@ def user(username):
         "tier6": user_record.tier6
     }
 
-    return render_template('user.html', user=user, user_record_dict=user_record_dict,  trigger=trigger)
+    return render_template('user.html', user=user, user_record_dict=user_record_dict, user_record=user_record, trigger=trigger)
 
 
 @app.route('/login', methods=['GET', 'POST'])

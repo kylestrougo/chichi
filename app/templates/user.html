@@ -14,6 +14,13 @@
             margin-bottom: 20px; /* Add margin to separate posts */
 
         }
+        .uk {
+            background-color: #48823a; /* Set background color to light green */
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 20px; /* Add margin to separate posts */
+
+        }
 
     /* Apply the width change to the container for screens smaller than 765px (phones) */
     @media (max-width: 765px) {
@@ -134,8 +141,27 @@
             </tr>
         {% endfor %}
     </table>
-    <hr>
-</div>
 
+    {% if user == current_user and trigger == 0 %}
+                    <div class="uk">
+                        <td style="text-align: left;">
+                            <a href="{{ url_for('tie_breaker', username=user) }}" style="color: blue; text-decoration: underline;">
+                                Edit Tiebreaker</a>: {{ user_record.single_number }}
+                        </td>
+                    </div >
+
+    {% else %}
+        <div class="uk">
+                        <td style="text-align: center;">
+                            <td><strong>
+                                Tiebreaker
+                            </strong>
+                            </td >
+                            :  {{ user_record.single_number }}
+                        </td>
+        <div>
+    {% endif %}
 </div>
+</div>
+     <hr>
 {% endblock %}
