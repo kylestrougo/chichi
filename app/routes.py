@@ -1,7 +1,7 @@
 from app import app, db
 from flask import render_template, flash, redirect, url_for, request
 from helper import update_player_by_tier, get_leaderboard, send_password_reset_email
-from app.models import User, Post
+from app.models import User, Post, TournamentStatus
 from app.forms import LoginForm, PostForm, PlayerSelectionForm, ResetPasswordRequestForm, ResetPasswordForm
 from flask_login import current_user, login_user, logout_user, login_required
 from urllib.parse import urlsplit
@@ -10,13 +10,14 @@ from datetime import datetime
 from app.models import Masters, updated, Draft
 import pandas as pd
 
-trigger = 0
-
 # Function to grant/ revoke access upon tournament start
 def tournament_start():
-    global trigger
-    trigger = 1
-    print("Access granted at:", datetime.now())
+    app.app_context().push()
+    db.session.query(TournamentStatus).delete()
+    s = TournamentStatus(status=1)
+    db.session.add(s)
+    db.session.commit()
+    print("Access granted at:", datetime.now(), ", Trigger is: ", TournamentStatus.query.first())
 
 @app.route('/')
 @app.route('/index')
@@ -38,7 +39,9 @@ def index():
 @app.route('/user/<username>')
 @login_required
 def user(username):
-    global trigger
+    trigger = TournamentStatus.query.first()
+    trigger = trigger.status
+    print("User: ", trigger)
     user = User.query.filter_by(username=username).first_or_404()
     user_record = Draft.query.filter_by(user=user).first()
     user_record_dict = {
@@ -121,7 +124,9 @@ def edit_profile():
 @app.route('/leaderboard')
 @login_required
 def leaderboard():
-    global trigger
+    trigger = TournamentStatus.query.first()
+    trigger = trigger.status
+    print("Leaderboard: ", trigger)
     if trigger  == 1:
         leaderboard, x = get_leaderboard()
         return render_template('leaderboard.html', leaderboard=leaderboard)
@@ -133,7 +138,9 @@ def leaderboard():
 @app.route('/smack', methods=['GET', 'POST'])
 @login_required
 def smack():
-    global trigger
+    trigger = TournamentStatus.query.first()
+    trigger = trigger.status
+    print("Smack: ", trigger)
     form = PostForm()
     if form.validate_on_submit():
         post = Post(body=form.post.data, author=current_user)

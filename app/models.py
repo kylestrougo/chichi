@@ -6,6 +6,11 @@ from hashlib import md5
 from time import time
 import jwt
 
+class TournamentStatus(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    status = db.Column(db.Integer, default=0)
+    def __repr__(self):
+        return repr(self.status)
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
