@@ -8,9 +8,9 @@ import os
 
 
 def add_jobs():
-    scheduler.add_job(id='refresh_scores', func=update_data, trigger='interval', seconds=30)
+    #scheduler.add_job(id='refresh_scores', func=update_data, trigger='interval', seconds=30)
 
-    start_date = datetime(2023, 12, 27, 17, 0, 0)
+    start_date = datetime(2023, 12, 27, 17, 10, 0)
     end_date = datetime(2023, 12, 30, 17, 7, 30)
 
     email_trigger = CronTrigger(hour=17, minute=23, second=0)

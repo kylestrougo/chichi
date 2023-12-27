@@ -81,9 +81,57 @@ def scrape_data():
 
     return df
 
+def masters_api():
+    url = "https://live-golf-data.p.rapidapi.com/leaderboard"
+
+    querystring = {"orgId": "1", "tournId": "016", "year": "2022"}
+
+    headers = {
+        "X-RapidAPI-Key": "a0ad1bcf9amsh91cc2112fc6cc5bp10c0dajsne93b3dec7c82",
+        "X-RapidAPI-Host": "live-golf-data.p.rapidapi.com"
+    }
+
+    response = requests.get(url, headers=headers, params=querystring)
+
+    json_data = response.json()
+
+    # Extracting the 'leaderboardRows' data
+    leaderboard_data = json_data.get('leaderboardRows', [])
+
+    # Function to cleanse score values
+    def cleanse_score(score):
+        if score == 'E':
+            return 0
+        elif score is None:
+            return None
+        else:
+            return int(score)
+
+    # Creating lists to hold extracted data
+    player_data = []
+
+    # Extracting required data elements from the leaderboard data
+    for player in leaderboard_data:
+        player_info = {
+            'Pos': player.get('position'),
+            'Player': player.get('firstName') + ' ' + player.get('lastName'),
+            'R1': cleanse_score(next((round_data['scoreToPar'] for round_data in player['rounds'] if round_data['roundId']['$numberInt'] == '1'), None)),
+            'R2': cleanse_score(next((round_data['scoreToPar'] for round_data in player['rounds'] if round_data['roundId']['$numberInt'] == '2'), None)),
+            'R3': cleanse_score(next((round_data['scoreToPar'] for round_data in player['rounds'] if round_data['roundId']['$numberInt'] == '3'), None)),
+            'R4': cleanse_score(next((round_data['scoreToPar'] for round_data in player['rounds'] if round_data['roundId']['$numberInt'] == '4'), None)),
+            'To Par': cleanse_score(player.get('total'))
+        }
+        player_data.append(player_info)
+
+    # Create DataFrame from extracted data
+    player_df = pd.DataFrame(player_data)
+
+    return player_df
+
 
 def update_data():
-    scraped_data = scrape_data()  # Scrape data from the website
+    #scraped_data = scrape_data()  # Scrape data from the website
+    scraped_data = masters_api() # fetch data from api
     # Delete existing data
     app.app_context().push()
     db.session.query(Masters).delete()

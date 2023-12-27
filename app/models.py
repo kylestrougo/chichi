@@ -79,7 +79,7 @@ class Masters(db.Model):
     to_par = db.Column(db.Integer)
 
     def __repr__(self):
-        return f"<tr><td>{self.pos}</td><td>{self.player}</td><td>{self.r1}</td><td>{self.r2}</td><td>{self.r3}</td><td>{self.r4}</td><td>{self.to_par}</td>"
+        return f"<tr><td>{self.pos}</td><td>{self.player}</td><td>{self.to_par}</td><td>{self.r1}</td><td>{self.r2}</td><td>{self.r3}</td><td>{self.r4}</td></tr>"
 
 
 class updated(db.Model):
