@@ -131,7 +131,7 @@ def leaderboard():
         leaderboard, x = get_leaderboard()
         return render_template('leaderboard.html', leaderboard=leaderboard)
     else:
-        flash("Access to this page is granted upon Tournament Start")
+        flash("Leaderboard will activate at tournament start")
         return redirect(url_for('index'))
 
 
@@ -153,13 +153,13 @@ def smack():
 
     return render_template("smack.html", title='Smack Board', form=form,
                            posts=posts, trigger=trigger)
-
+'''
 
 @app.route('/draft/<int:tier>/<username>', methods=['GET', 'POST'])
 @login_required
 def draft(tier, username):
     players = pd.read_csv('app/players_tiered.csv')
-    players.drop(columns=['Unnamed: 0'], inplace=True)
+    #players.drop(columns=['Unnamed: 0'], inplace=True)
 
     # Filter players based on the current tier
     filtered_players = players[players['Tier'] == tier]
@@ -187,13 +187,41 @@ def draft(tier, username):
 
     return render_template('draft.html', title='Draft Lineup', form=form, players=filtered_players, tier=tier,
                            username=user)
+'''
 
+@app.route('/draft/<int:tier>/<username>', methods=['GET', 'POST'])
+@login_required
+def draft(tier, username):
+    players = pd.read_csv('app/players_tiered.csv')
+    filtered_players = players[players['Tier'] == tier]
+
+    form = PlayerSelectionForm()
+    form.player_selection.choices = [(index, player['Golfer']) for index, player in filtered_players.iterrows()]
+    user = User.query.filter_by(username=username).first_or_404()
+
+    if form.validate_on_submit():
+        selected_player_index = form.player_selection.data
+        selected_player_name = filtered_players.at[selected_player_index, 'Golfer']
+        selected_player_id = filtered_players.at[selected_player_index, 'playerId']
+
+        # Save selected player ID and name to the database for the user and tier
+        update_player_by_tier(user.id, tier, selected_player_name, selected_player_id)
+
+        # Redirect to the next tier or a different page
+        next_tier = tier + 1
+        if next_tier <= 6:
+            return redirect(url_for('draft', tier=next_tier, username=user))
+        else:
+            # Draft completed, redirect to completed profile or any other page
+            return redirect(url_for('tie_breaker', username=user))
+
+    return render_template('draft.html', title='Draft Lineup', form=form, players=filtered_players, tier=tier, username=user)
 
 @app.route('/tier/<int:tier>/<username>', methods=['GET', 'POST'])
 @login_required
 def tier(tier, username):
     players = pd.read_csv('app/players_tiered.csv')
-    players.drop(columns=['Unnamed: 0'], inplace=True)
+    #players.drop(columns=['Unnamed: 0'], inplace=True)
 
     # Filter players based on the current tier
     filtered_players = players[players['Tier'] == tier]
@@ -206,10 +234,11 @@ def tier(tier, username):
     if form.validate_on_submit():
         selected_player_index = form.player_selection.data
         # selected_player = filtered_players.iloc[selected_player_index]
-        selected_player = filtered_players.at[selected_player_index, 'Golfer']
-        # Save selected player to the database or perform any other actions
+        selected_player_name = filtered_players.at[selected_player_index, 'Golfer']
+        selected_player_id = filtered_players.at[selected_player_index, 'playerId']
 
-        update_player_by_tier(user.id, tier, selected_player)
+        # Save selected player ID and name to the database for the user and tier
+        update_player_by_tier(user.id, tier, selected_player_name, selected_player_id)
 
         return redirect(url_for('user', username=current_user))
 

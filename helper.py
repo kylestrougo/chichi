@@ -115,6 +115,7 @@ def masters_api():
         player_info = {
             'Pos': player.get('position'),
             'Player': player.get('firstName') + ' ' + player.get('lastName'),
+            'playerId': player.get('playerId'),
             'R1': cleanse_score(next((round_data['scoreToPar'] for round_data in player['rounds'] if round_data['roundId']['$numberInt'] == '1'), None)),
             'R2': cleanse_score(next((round_data['scoreToPar'] for round_data in player['rounds'] if round_data['roundId']['$numberInt'] == '2'), None)),
             'R3': cleanse_score(next((round_data['scoreToPar'] for round_data in player['rounds'] if round_data['roundId']['$numberInt'] == '3'), None)),
@@ -143,6 +144,7 @@ def update_data():
         entry = Masters(
             pos=str(row['Pos']),
             player=row['Player'],
+            playerId=row['playerId'],
             r1=str(row['R1']),
             r2=str(row['R2']),
             r3=str(row['R3']),
@@ -165,7 +167,7 @@ def update_data():
 
     db.session.commit()
 
-
+'''
 def update_player_by_tier(user_id, tier, player_name):
     user_record = Draft.query.filter_by(user_id=user_id).first()
 
@@ -183,18 +185,39 @@ def update_player_by_tier(user_id, tier, player_name):
         db.session.commit()
     except IntegrityError:
         db.session.rollback()  # Handle any errors that occurred during commit
+'''
 
+def update_player_by_tier(user_id, tier, player_name, player_id):
+    user_record = Draft.query.filter_by(user_id=user_id).first()
+    player_id = int(player_id)
+
+    if user_record:
+        # Update existing record for the user and tier
+        setattr(user_record, f'tier{tier}', player_name)
+        setattr(user_record, f't{tier}_id', player_id)  # Update player ID for the tier
+    else:
+        # Create a new record if one doesn't exist for the user and tier
+        user_record = Draft(user_id=user_id)
+        setattr(user_record, f'tier{tier}', player_name)
+        setattr(user_record, f't{tier}_id', player_id)  # Set player ID for the tier
+
+    # Commit changes to the database
+    try:
+        db.session.add(user_record)
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()  # Handle any errors that occurred during commit
 
 def get_leaderboard():
     # Fetching leaderboard data
     leaderboard_data = db.session.query(User.username, Draft, db.func.sum(Masters.to_par).label('total_score')) \
         .join(Draft) \
-        .join(Masters, (Draft.tier1 == Masters.player) |
-              (Draft.tier2 == Masters.player) |
-              (Draft.tier3 == Masters.player) |
-              (Draft.tier4 == Masters.player) |
-              (Draft.tier5 == Masters.player) |
-              (Draft.tier6 == Masters.player)) \
+        .join(Masters, (Draft.t1_id == Masters.playerId) |
+              (Draft.t2_id == Masters.playerId) |
+              (Draft.t3_id == Masters.playerId) |
+              (Draft.t4_id == Masters.playerId) |
+              (Draft.t5_id == Masters.playerId) |
+              (Draft.t6_id == Masters.playerId)) \
         .group_by(Draft.id) \
         .all()
 

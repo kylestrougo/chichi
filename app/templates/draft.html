@@ -107,34 +107,25 @@
             <p style="text-align: center;">
                 <a>Draft a Tier {{ tier }} Golfer</a>
             </p>
-            <table class="table table-striped">
-                <div>
-                    <div class="form">{{ form.player_selection(index=index) }}</div>
-                    <hr>
+             <table class="table table-striped">
+                 <div class="form">{{ form.player_selection(index=index) }}</div>
                     <tr>
                         <th>Golfer</th>
-                        {% for column in players.columns %}
-                            {% if column != 'Golfer' %}
-                                <th>{{ column }}</th>
-                            {% endif %}
-                        {% endfor %}
+                        <th>World Ranking</th>
+                        <th>Tier</th>
                     </tr>
-                </div>
-                <tbody>
-                    <!-- Table rows for each player -->
-                    {% for index, player in players.iterrows() %}
-                        <tr>
-                            <!-- Display only the radio button in the "Select" column -->
-                            <td>{{ player['Golfer'] }}</td> <!-- Display player's name in the "Golfer" column -->
-                            {% for column, value in player.items() %}
-                                {% if column != 'Golfer' %}
-                                    <td>{{ value }}</td> <!-- Display other column values -->
-                                {% endif %}
-                            {% endfor %}
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    <tbody>
+                        <!-- Table rows for each player -->
+                        {% for index, player in players.iterrows() %}
+                            <tr>
+                                <!-- Display only the required columns -->
+                                <td>{{ player['Golfer'] }}</td> <!-- Display player's name in the "Golfer" column -->
+                                <td>{{ player['Rank'] }}</td> <!-- Display player's rank in the "Rank" column -->
+                                <td>{{ player['Tier'] }}</td> <!-- Display player's tier in the "Tier" column -->
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             <button type="submit" class="submit-button">Submit</button>
         </fieldset>
     </form>

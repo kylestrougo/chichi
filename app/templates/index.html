@@ -63,7 +63,7 @@
     <span class="datetime-text">{{ datetime }}</span>
 </div>
 <div class="table-container">
-        <table>
+    <table>
         <tr>
             <th>Position</th>
             <th>Player</th>
@@ -74,7 +74,15 @@
             <th>Rnd 4</th>
         </tr>
         {% for entry in data %}
-            {{ entry|safe }}
+            <tr>
+                <td>{{ entry.pos }}</td>
+                <td>{{ entry.player }}</td>
+                <td>{{ entry.to_par }}</td>
+                <td>{{ entry.r1 }}</td>
+                <td>{{ entry.r2 }}</td>
+                <td>{{ entry.r3 }}</td>
+                <td>{{ entry.r4 }}</td>
+            </tr>
         {% endfor %}
     </table>
 </div>
