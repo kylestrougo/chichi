@@ -277,6 +277,12 @@ def send_leaderboard_email():
     app.app_context().push()
     x, leaderboard_entries = get_leaderboard()
     masters = Masters.query.all()
+    for entry in masters:
+        # Replace '0' with 'E' for r1, r2, r3, r4 for active player's scores
+        entry.r1 = 'E' if entry.r1 == '0' else entry.r1
+        entry.r2 = 'E' if entry.r2 == '0' else entry.r2
+        entry.r3 = 'E' if entry.r3 == '0' else entry.r3
+        entry.r4 = 'E' if entry.r4 == '0' else entry.r4
     email_body = render_template('email/leaderboard_email.html', leaderboard=leaderboard_entries, masters=masters)
 
     all_users = User.query.with_entities(User.email).all()

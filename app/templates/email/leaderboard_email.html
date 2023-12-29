@@ -132,26 +132,30 @@
 </div>
 <hr>
 <div class="table-container">
-     <table border="1">
-  <thead>
-  <tr>
+    <div class="text-container">
+        <table>
+        <tr>
             <th>Position</th>
             <th>Player</th>
-            <th>Round 1</th>
-            <th>Round 2</th>
-            <th>Round 3</th>
-            <th>Round 4</th>
             <th>To Par</th>
-    </tr>
-  </thead>
-         <div class="text-container">
-  <tbody>
-    {% for entry in masters %}
-    {{ entry | safe }}
-    {% endfor %}
-  </tbody>
+            <th>Rnd 1</th>
+            <th>Rnd 2</th>
+            <th>Rnd 3</th>
+            <th>Rnd 4</th>
+        </tr>
+        {% for entry in masters %}
+            <tr>
+                <td>{{ entry.pos }}</td>
+                <td>{{ entry.player }}</td>
+                <td>{{ entry.to_par }}</td>
+                <td>{{ entry.r1 }}</td>
+                <td>{{ entry.r2 }}</td>
+                <td>{{ entry.r3 }}</td>
+                <td>{{ entry.r4 }}</td>
+            </tr>
+        {% endfor %}
+    </table>
         </div>
-</table>
 </div>
 
 </body>
