@@ -2,13 +2,92 @@
 {% block content %}
 <head>
     <title>Chi Chi Leaderboard</title>
-
-
 </head>
 <body>
+<style>
+    /* Move the styles from the <head> section to the body */
+    .header {
+        text-align: center;
+        background-color: #48823a;
+        color: #ffcb05;
+        padding: 0;
+        font-size: 80px;
+        height: 100px;
+        line-height: 80px;
+    }
+.text-container {
+            white-space: nowrap; /* Prevent text from wrapping */
+            overflow: hidden; /* Hide overflow if text exceeds container */
+            text-overflow: ellipsis; /* Show ellipsis (...) if text overflows */
+            font-size: 20px; /* Set initial font size */
+        }
+
+    .leaderboard-text {
+        font-size: 24px;
+    }
+
+    .logo {
+        max-width: 100px;
+        vertical-align: middle;
+        margin-right: 5px;
+    }
+
+    .table-container {
+        overflow-x: auto; /* Enable horizontal scrolling for the table container */
+    }
+
+    table {
+        width: 100%; /* Make the table fill the container width */
+    }
+
+    /* Styles for mobile devices */
+    @media (max-width: 768px) {
+        .header {
+            font-size: 40px;
+            height: auto; /* Adjust height for smaller screens */
+            line-height: 50px;
+        }
+
+        .logo {
+            max-width: 60px;
+            margin-right: 3px;
+        }
+        table, table td, table th {
+            font-size: 10px !important; /* Further decrease the font size for mobile screens */
+        }
+    }
+
+    /* Style for the datetime text */
+    .datetime-text {
+        font-size: 12px; /* Adjust the font size as needed */
+        font-style: italic; /* Italicize the text */
+        color: #ffcb05;
+    }
+</style>
     <h1>Chi Chi Leaderboard</h1>
-    <div style="overflow-x:auto;">
-        {{ table | safe }}
-    </div>
+
+<div class="table-container">
+     <table border="1">
+  <thead>
+    <tr>
+      <th>Rank</th>
+      <th>Username</th>
+      <th>Tier 1</th>
+      <th>Tier 2</th>
+      <th>Tier 3</th>
+      <th>Tier 4</th>
+      <th>Tier 5</th>
+      <th>Tier 6</th>
+      <th>Tiebreaker</th>
+      <th>Total Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for entry in leaderboard %}
+    {{ entry | safe }}
+    {% endfor %}
+  </tbody>
+</table>
+</div>
 </body>
 {% endblock %}

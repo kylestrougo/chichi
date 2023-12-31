@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, HiddenField, RadioField
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, HiddenField, RadioField, \
+    IntegerField
+from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, NumberRange
 from app.models import User
 from wtforms import StringField, TextAreaField, SubmitField
 from wtforms.validators import DataRequired, Length
@@ -8,6 +9,12 @@ from wtforms.validators import DataRequired, Length
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
+
+    def validate_username(form, field):
+        if field.data:
+            field.data = field.data.lower()  # Convert username to lowercase
+            # Perform other validations if needed
+
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
@@ -60,3 +67,17 @@ class PlayerSelectionForm(FlaskForm):
 
 class PlayerSelectionSubForm(FlaskForm):
     player_selection = BooleanField('Select Player')
+
+class ResetPasswordRequestForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Request Password Reset')
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('Password', validators=[DataRequired()])
+    password2 = PasswordField(
+        'Repeat Password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Request Password Reset')
+
+class TieBreakerForm(FlaskForm):
+    single_number = IntegerField('Predict 1st Place\'s Score:', validators=[DataRequired()], render_kw={"type": "number"})
+    submit = SubmitField('Save Number')

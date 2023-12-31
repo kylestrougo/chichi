@@ -89,17 +89,30 @@
         <hr>
         {% for post in posts %}
             <form class="post">
+                {% if trigger == 1 %}
                 <table>
                     <tr valign="top">
                         <td><img src="{{ post.author.avatar(36) }}"></td>
                         <td style="text-align: left;">
-                            <a href="{{ url_for('user', username=post.author.username) }}">
+<a href="{{ url_for('user', username=post.author.username) }}" style="color: blue; text-decoration: underline;">{{ post.author.username }}</a>:  {{ post.body }}
+</td>
+                    </tr >
+                </table>
+                {% else %}
+               <table>
+                    <tr valign="top">
+                        <td><img src="{{ post.author.avatar(36) }}"></td>
+                        <td style="text-align: left;">
+                            <a>
+                                <strong>
                                 {{ post.author.username }}
+                                </strong>
                             </a>
                             :  {{ post.body }}
                         </td>
                     </tr >
                 </table>
+                {% endif %}
             </form>
         <hr>
         {% endfor %}

@@ -1,3 +1,4 @@
+<!-- draft.html -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,6 +21,17 @@
             padding: 20px; /* Adjust padding for better touch interaction on mobile */
             margin: 0;
             font-size: 28px; /* Smaller font size for better readability on mobile */
+        }
+
+        .form-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Optional: Additional styling for form elements */
+        form {
+            text-align: center; /* Center-align form elements */
         }
 
         table {
@@ -59,6 +71,11 @@
             background-color: #ffa500;
             color: #ffffff;
         }
+        .pass {
+        background-color: #48823a;
+        padding: 20px;
+        border-radius: 28px;
+    }
 
     </style>
 <style>
@@ -99,35 +116,23 @@
         }
     }
 </style>
-
-<div class="content-section">
+<body>
+    <h1>Tie Breaker</h1>
+    <hr>
+    <div class="pass">
+        <div class="form-container">
     <form method="POST" action="">
         {{ form.hidden_tag() }}
-        <fieldset class="form-group">
-            <p style="text-align: center;">
-                <a>Draft a Tier {{ tier }} Golfer</a>
-            </p>
-             <table class="table table-striped">
-                 <div class="form">{{ form.player_selection(index=index) }}</div>
-                    <tr>
-                        <th>Golfer</th>
-                        <th>World Ranking</th>
-                        <th>Tier</th>
-                    </tr>
-                    <tbody>
-                        <!-- Table rows for each player -->
-                        {% for index, player in players.iterrows() %}
-                            <tr>
-                                <!-- Display only the required columns -->
-                                <td>{{ player['Golfer'] }}</td> <!-- Display player's name in the "Golfer" column -->
-                                <td>{{ player['Rank'] }}</td> <!-- Display player's rank in the "Rank" column -->
-                                <td>{{ player['Tier'] }}</td> <!-- Display player's tier in the "Tier" column -->
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            <button type="submit" class="submit-button">Submit</button>
-        </fieldset>
+        <p>
+            {{ form.single_number.label }}<br>
+            {{ form.single_number(size=20) }}<br>
+            {% for error in form.single_number.errors %}
+                <span style="color: red;">{{ error }}</span><br>
+            {% endfor %}
+        </p>
+        <p><button type="submit" class="submit-button">Submit</button>
     </form>
-</div>
+        </div>
+        </div>
+</body>
 </html>
