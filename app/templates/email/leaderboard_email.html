@@ -1,36 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Add viewport meta tag for responsiveness -->
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chi Chi Leaderboard</title>
-
-<body>
-<style>
+    <style>
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
             background-color: #2c442b;
         }
-        .text-container {
-            white-space: nowrap; /* Prevent text from wrapping */
-            overflow: hidden; /* Hide overflow if text exceeds container */
-            text-overflow: ellipsis; /* Show ellipsis (...) if text overflows */
-            font-size: 20px; /* Set initial font size */
-        }
 
-        h1 {
-            text-align: center;
-            background-color: #48823a;
-            color: #ffcb05;
-            padding: 20px; /* Adjust padding for better touch interaction on mobile */
-            margin: 0;
-            font-size: 28px; /* Smaller font size for better readability on mobile */
-        }
-
+        /* Common styles for tables */
         table {
             border-collapse: collapse;
             width: 100%; /* Make the table fill the container width */
@@ -54,108 +36,67 @@
             background-color: #e4f1d3;
         }
 
-        a {
-            color: #ffcb05;
-            text-decoration: none;
-            font-size: 19px; /* Smaller font size for better touch interaction and readability on mobile */
-        }
+        /* Media query for larger screens */
+        @media screen and (min-width: 768px) {
+            table {
+                width: 70%; /* Adjust table width for larger screens */
+                margin: 10px auto; /* Center-align the table */
+            }
 
-        a:hover {
-            color: #ffa500;
+            th, td {
+                max-width: none; /* Override max-width for larger screens */
+                word-wrap: normal; /* Prevent word wrap */
+            }
         }
-
-        button:hover {
-            background-color: #ffa500;
-            color: #ffffff;
-        }
-
     </style>
-<style>
-    /* Additional CSS styles */
-
-    input[type="radio"] {
-        /* Define custom size */
-        width: 20px;
-        height: 20px;
-    }
-    .submit-button {
-        padding: 15px;
-        width: 100%; /* Button width extends to full width */
-        margin: 15px 0;
-        border: none;
-        background-color: #ffcb05;
-        color: #2c442b;
-        font-size: 20px;
-        border-radius: 5px;
-    }
-
-
-    .form {
-        width: 70%; /* Reduced form width */
-        margin: 0 auto; /* Centering the form container */
-        background-color: #48823a;
-        padding: 15px;
-        margin-top: 10px;
-        border-radius: 28px;
-    }
-
-    /* Apply the width change to the container for screens smaller than 765px (phones) */
-    @media (max-width: 765px) {
-        .form {
-            width: 100%; /* Adjust the width as needed */
-            padding: 0px;
-            margin: 0 auto;
-        }
-        table, table td, table th {
-            font-size: 10px !important; /* Further decrease the font size for mobile screens */
-        }
-    }
-</style>
+</head>
+<body>
 
 <div class="table-container">
-     <table border="1">
-  <thead>
-    <tr><th>Rank</th>
-      <th style="max-width: 150px;">Username</th>
-        <th>Tiebreaker</th>
-      <th>Total Score</th>
-    </tr>
-  </thead>
-         <div class="text-container">
-  <tbody>
-    {% for entry in leaderboard %}
-    {{ entry | safe }}
-    {% endfor %}
-  </tbody>
-        </div>
-</table>
+    <table border="1">
+        <thead>
+            <tr style="font-size: 10px !important;">
+                <th>Rank</th>
+                <th>Username</th>
+                <th>Tiebreaker</th>
+                <th>Total Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in leaderboard %}
+                {{ entry | safe }}
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 <hr>
 <div class="table-container">
-    <div class="text-container">
-        <table>
-        <tr>
-            <th>Position</th>
-            <th>Player</th>
-            <th>To Par</th>
-            <th>Rnd 1</th>
-            <th>Rnd 2</th>
-            <th>Rnd 3</th>
-            <th>Rnd 4</th>
-        </tr>
-        {% for entry in masters %}
+    <table>
+        <thead>
             <tr>
-                <td>{{ entry.pos }}</td>
-                <td>{{ entry.player }}</td>
-                <td>{{ entry.to_par }}</td>
-                <td>{{ entry.r1 }}</td>
-                <td>{{ entry.r2 }}</td>
-                <td>{{ entry.r3 }}</td>
-                <td>{{ entry.r4 }}</td>
+                <th>Position</th>
+                <th>Player</th>
+                <th>To Par</th>
+                <th>Rnd 1</th>
+                <th>Rnd 2</th>
+                <th>Rnd 3</th>
+                <th>Rnd 4</th>
             </tr>
-        {% endfor %}
+        </thead>
+        <tbody>
+            {% for entry in masters %}
+                <tr>
+                    <td>{{ entry.pos }}</td>
+                    <td>{{ entry.player }}</td>
+                    <td>{{ entry.to_par }}</td>
+                    <td>{{ entry.r1 }}</td>
+                    <td>{{ entry.r2 }}</td>
+                    <td>{{ entry.r3 }}</td>
+                    <td>{{ entry.r4 }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
     </table>
-        </div>
 </div>
 
 </body>

@@ -13,7 +13,7 @@ def add_jobs():
     start_date = datetime(2023, 12, 29, 16, 31, 0)
     end_date = datetime(2024, 12, 30, 17, 7, 30)
 
-    email_trigger = CronTrigger(hour=16, minute=31, second=0)
+    email_trigger = CronTrigger(hour=13, minute=58, second=10)
     scheduler.add_job(id='email_leaderboard', func=send_leaderboard_email, trigger=email_trigger, start_date=start_date,
                       end_date=end_date)
 

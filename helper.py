@@ -241,7 +241,7 @@ def get_leaderboard():
         for entry in scores[score]:
             user_profile_url = url_for('user', username=entry.username)
             user_entry = f"<tr><td>{rank}</td><td><a href='{user_profile_url}' style=\"color: blue; max-width: 200px; text-decoration: underline;\">{entry.username}</a></td><td>{entry.Draft.tier1}</td><td>{entry.Draft.tier2}</td><td>{entry.Draft.tier3}</td><td>{entry.Draft.tier4}</td><td>{entry.Draft.tier5}</td><td>{entry.Draft.tier6}</td><td>{entry.Draft.single_number}</td><td>{entry.total_score}</td></tr>"
-            user_email = f"<tr><td>{rank}</td><td><a href='{user_profile_url}' style=\"color: blue; max-width: 200px; text-decoration: underline;\">{entry.username}</a></td><td>{entry.Draft.single_number}</td><td>{entry.total_score}</td></tr>"
+            user_email = f"<tr><td style='border: 1px solid #1a351d; padding: 10px; text-align: center; font-size: 16px;'>{rank}</td><td style='border: 1px solid #1a351d; padding: 10px; text-align: center; font-size: 16px;'><a href='{user_profile_url}' style='color: blue; max-width: 200px; text-decoration: underline;'>{entry.username}</a></td><td style='border: 1px solid #1a351d; padding: 10px; text-align: center; font-size: 16px;'>{entry.Draft.single_number}</td><td style='border: 1px solid #1a351d; padding: 10px; text-align: center; font-size: 16px;'>{entry.total_score}</td></tr>"
             leaderboard_entries.append(user_entry)
             leaderboard_email.append(user_email)
             rank += 1
