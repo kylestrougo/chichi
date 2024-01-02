@@ -1,9 +1,9 @@
 import requests
-from bs4 import BeautifulSoup
+#from bs4 import BeautifulSoup
 import pandas as pd
 from datetime import datetime
 from flask_mail import Message
-import re
+#import re
 from app import mail
 from flask import url_for
 from app import db, app
@@ -12,7 +12,7 @@ from sqlalchemy.exc import IntegrityError
 from flask import render_template
 from threading import Thread
 from collections import defaultdict
-
+'''
 def scrape_data():
     # Replace 'url' with the URL of the webpage containing the table
     url = 'https://www.pgatour.com/tournaments/2024/masters-tournament/R2024014/past-results'
@@ -80,7 +80,7 @@ def scrape_data():
                 df.at[index, col] = 0  # Replace empty strings with 0
 
     return df
-
+'''
 def masters_api():
     url = "https://live-golf-data.p.rapidapi.com/leaderboard"
 
