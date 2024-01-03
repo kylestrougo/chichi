@@ -1,3 +1,5 @@
+from flask_sqlalchemy.session import Session
+
 from app import app, db
 from flask import render_template, flash, redirect, url_for, request
 from helper import update_player_by_tier, get_leaderboard, send_password_reset_email
@@ -10,6 +12,7 @@ from datetime import datetime
 from app.models import Masters, updated, Draft
 import pandas as pd
 
+
 # Function to grant/ revoke access upon tournament start
 def tournament_start():
     app.app_context().push()
@@ -19,13 +22,14 @@ def tournament_start():
     db.session.commit()
     print("Access granted at:", datetime.now(), ", Trigger is: ", TournamentStatus.query.first())
 
+
 @app.route('/')
 @app.route('/index')
 @login_required
 def index():
     data = Masters.query.all()
     for entry in data:
-            # Replace '0' with 'E' for r1, r2, r3, r4 for active player's scores
+        # Replace '0' with 'E' for r1, r2, r3, r4 for active player's scores
         entry.r1 = 'E' if entry.r1 == '0' else entry.r1
         entry.r2 = 'E' if entry.r2 == '0' else entry.r2
         entry.r3 = 'E' if entry.r3 == '0' else entry.r3
@@ -53,7 +57,8 @@ def user(username):
         "tier6": user_record.tier6
     }
 
-    return render_template('user.html', user=user, user_record_dict=user_record_dict, user_record=user_record, trigger=trigger)
+    return render_template('user.html', user=user, user_record_dict=user_record_dict, user_record=user_record,
+                           trigger=trigger)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -96,11 +101,12 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 
-@app.before_request
-def before_request():
+@app.after_request
+def after_request(response):
     if current_user.is_authenticated:
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
+    return response
 
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
@@ -126,7 +132,7 @@ def leaderboard():
     trigger = TournamentStatus.query.first()
     trigger = trigger.status
     print("Leaderboard: ", trigger)
-    if trigger  == 1:
+    if trigger == 1:
         leaderboard, x = get_leaderboard()
         return render_template('leaderboard.html', leaderboard=leaderboard)
     else:
@@ -152,6 +158,8 @@ def smack():
 
     return render_template("smack.html", title='Smack Board', form=form,
                            posts=posts, trigger=trigger)
+
+
 '''
 
 @app.route('/draft/<int:tier>/<username>', methods=['GET', 'POST'])
@@ -188,6 +196,7 @@ def draft(tier, username):
                            username=user)
 '''
 
+
 @app.route('/draft/<int:tier>/<username>', methods=['GET', 'POST'])
 @login_required
 def draft(tier, username):
@@ -214,13 +223,15 @@ def draft(tier, username):
             # Draft completed, redirect to completed profile or any other page
             return redirect(url_for('tie_breaker', username=user))
 
-    return render_template('draft.html', title='Draft Lineup', form=form, players=filtered_players, tier=tier, username=user)
+    return render_template('draft.html', title='Draft Lineup', form=form, players=filtered_players, tier=tier,
+                           username=user)
+
 
 @app.route('/tier/<int:tier>/<username>', methods=['GET', 'POST'])
 @login_required
 def tier(tier, username):
     players = pd.read_csv('app/players_tiered.csv')
-    #players.drop(columns=['Unnamed: 0'], inplace=True)
+    # players.drop(columns=['Unnamed: 0'], inplace=True)
 
     # Filter players based on the current tier
     filtered_players = players[players['Tier'] == tier]
