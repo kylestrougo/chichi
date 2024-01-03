@@ -10,10 +10,10 @@ import os
 def add_jobs():
     scheduler.add_job(id='refresh_scores', func=update_data, trigger='interval', seconds=30)
 
-    start_date = datetime(2024, 1, 2, 22, 6, 10)
+    start_date = datetime(2024, 1, 2, 22, 9, 10)
     end_date = datetime(2024, 12, 30, 17, 0, 30)
 
-    email_trigger = CronTrigger(hour=22, minute=6, second=10)
+    email_trigger = CronTrigger(hour=22, minute=9, second=10)
     scheduler.add_job(id='email_leaderboard', func=send_leaderboard_email, trigger=email_trigger, start_date=start_date,
                       end_date=end_date)
 
