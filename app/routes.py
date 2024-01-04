@@ -30,10 +30,10 @@ def index():
     data = Masters.query.all()
     for entry in data:
         # Replace '0' with 'E' for r1, r2, r3, r4 for active player's scores
-        entry.r1 = 'E' if entry.r1 == '0' else entry.r1
-        entry.r2 = 'E' if entry.r2 == '0' else entry.r2
-        entry.r3 = 'E' if entry.r3 == '0' else entry.r3
-        entry.r4 = 'E' if entry.r4 == '0' else entry.r4
+        entry.r1 = 'E' if entry.r1 == '0' else '-' if entry.r1 == "None" else entry.r1
+        entry.r2 = 'E' if entry.r2 == '0' else '-' if entry.r2 == "None" else entry.r2
+        entry.r3 = 'E' if entry.r3 == '0' else '-' if entry.r3 == "None" else entry.r3
+        entry.r4 = 'E' if entry.r4 == '0' else '-' if entry.r4 == "None" else entry.r4
 
     datetime = updated.query.all()
     return render_template('index.html', title='Home', data=data, datetime=datetime)
@@ -100,14 +100,14 @@ def register():
         return redirect(url_for('draft', tier=1, username=user))
     return render_template('register.html', title='Register', form=form)
 
-
+'''
 @app.after_request
 def after_request(response):
     if current_user.is_authenticated:
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
     return response
-
+'''
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required

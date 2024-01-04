@@ -3,7 +3,7 @@ import requests
 import pandas as pd
 from datetime import datetime
 from flask_mail import Message
-#import re
+import re
 from app import mail
 from flask import url_for
 from app import db, app
@@ -81,10 +81,14 @@ def scrape_data():
 
     return df
 '''
+def generate_player_key(name):
+    name_without_special_chars = re.sub(r'[^a-zA-Z]+', '', name)
+    return name_without_special_chars.upper()
+
 def masters_api():
     url = "https://live-golf-data.p.rapidapi.com/leaderboard"
 
-    querystring = {"orgId": "1", "tournId": "016", "year": "2022"}
+    querystring = {"orgId": "1", "tournId": "016", "year": "2024"}
 
     headers = {
         "X-RapidAPI-Key": "a0ad1bcf9amsh91cc2112fc6cc5bp10c0dajsne93b3dec7c82",
@@ -115,7 +119,7 @@ def masters_api():
         player_info = {
             'Pos': player.get('position'),
             'Player': player.get('firstName') + ' ' + player.get('lastName'),
-            'playerId': player.get('playerId'),
+            'playerId': player.get('firstName') + player.get('lastName'),
             'R1': cleanse_score(next((round_data['scoreToPar'] for round_data in player['rounds'] if round_data['roundId']['$numberInt'] == '1'), None)),
             'R2': cleanse_score(next((round_data['scoreToPar'] for round_data in player['rounds'] if round_data['roundId']['$numberInt'] == '2'), None)),
             'R3': cleanse_score(next((round_data['scoreToPar'] for round_data in player['rounds'] if round_data['roundId']['$numberInt'] == '3'), None)),
@@ -126,6 +130,7 @@ def masters_api():
 
     # Create DataFrame from extracted data
     player_df = pd.DataFrame(player_data)
+    player_df['playerId'] = player_df['playerId'].apply(generate_player_key)
 
     return player_df
 
@@ -189,7 +194,7 @@ def update_player_by_tier(user_id, tier, player_name):
 
 def update_player_by_tier(user_id, tier, player_name, player_id):
     user_record = Draft.query.filter_by(user_id=user_id).first()
-    player_id = int(player_id)
+    #player_id = int(player_id)
 
     if user_record:
         # Update existing record for the user and tier

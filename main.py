@@ -10,10 +10,10 @@ import os
 def add_jobs():
     scheduler.add_job(id='refresh_scores', func=update_data, trigger='interval', seconds=30)
 
-    start_date = datetime(2024, 1, 2, 22, 9, 10)
+    start_date = datetime(2024, 1, 4, 11, 18, 0)
     end_date = datetime(2024, 12, 30, 17, 0, 30)
 
-    email_trigger = CronTrigger(hour=22, minute=9, second=10)
+    email_trigger = CronTrigger(hour=11, minute=18, second=10)
     scheduler.add_job(id='email_leaderboard', func=send_leaderboard_email, trigger=email_trigger, start_date=start_date,
                       end_date=end_date)
 
@@ -30,7 +30,7 @@ if __name__ == '__main__':
     # reset the status of TournamentStatus
     app.app_context().push()
     db.session.query(TournamentStatus).delete()
-    s = TournamentStatus(status=0)
+    s = TournamentStatus(status=1)
     db.session.add(s)
     db.session.commit()
     print("TournamentStatus: ", TournamentStatus.query.first())
