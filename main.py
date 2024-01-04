@@ -36,5 +36,6 @@ if __name__ == '__main__':
     print("TournamentStatus: ", TournamentStatus.query.first())
 
     initialize_scheduler()
-    app.run(debug=True, host='0.0.0.0')
+    #app.run(debug=True, host='0.0.0.0')
+    os.system("gunicorn -w 3 -b 0.0.0.0:5000 app:app")
 
