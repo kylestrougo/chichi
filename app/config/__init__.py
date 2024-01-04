@@ -22,4 +22,4 @@ class Config(object):
     #prod
     SERVER_NAME = 'chi-chi.duckdns.org' # Replace with your server's hostname and port
     APPLICATION_ROOT = '/' # Set if your app is hosted under a subpath
-    PREFERRED_URL_SCHEME = 'http'  # Set to 'https' if using HTTPS
+    PREFERRED_URL_SCHEME = 'https'
