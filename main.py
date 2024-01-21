@@ -30,12 +30,12 @@ if __name__ == '__main__':
     # reset the status of TournamentStatus
     app.app_context().push()
     db.session.query(TournamentStatus).delete()
-    s = TournamentStatus(status=1)
+    s = TournamentStatus(status=0)
     db.session.add(s)
     db.session.commit()
     print("TournamentStatus: ", TournamentStatus.query.first())
 
     initialize_scheduler()
-    #app.run(debug=True, host='0.0.0.0')
-    os.system("gunicorn -w 3 -b 0.0.0.0:5000 app:app")
+    app.run(debug=True, host='0.0.0.0')
+    ##os.system("gunicorn -w 3 -b 0.0.0.0:5000 app:app")
 

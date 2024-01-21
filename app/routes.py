@@ -2,7 +2,7 @@ from flask_sqlalchemy.session import Session
 
 from app import app, db
 from flask import render_template, flash, redirect, url_for, request
-from helper import update_player_by_tier, get_leaderboard, send_password_reset_email
+from helper import update_player_by_tier, get_leaderboard, send_password_reset_email, send_welcome_email
 from app.models import User, Post, TournamentStatus
 from app.forms import LoginForm, PostForm, PlayerSelectionForm, ResetPasswordRequestForm, ResetPasswordForm
 from flask_login import current_user, login_user, logout_user, login_required
@@ -96,6 +96,8 @@ def register():
         db.session.add(user)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
+        email = user.email
+        send_welcome_email(user, email)
         login_user(user)
         return redirect(url_for('draft', tier=1, username=user))
     return render_template('register.html', title='Register', form=form)

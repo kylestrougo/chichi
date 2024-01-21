@@ -1,0 +1,3 @@
+Dear {{ user.username }},
+
+Congratulations you are now a registered user!

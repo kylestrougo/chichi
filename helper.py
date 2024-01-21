@@ -1,5 +1,5 @@
 import requests
-#from bs4 import BeautifulSoup
+# from bs4 import BeautifulSoup
 import pandas as pd
 from datetime import datetime
 from flask_mail import Message
@@ -12,6 +12,7 @@ from sqlalchemy.exc import IntegrityError
 from flask import render_template
 from threading import Thread
 from collections import defaultdict
+
 '''
 def scrape_data():
     # Replace 'url' with the URL of the webpage containing the table
@@ -81,9 +82,12 @@ def scrape_data():
 
     return df
 '''
+
+
 def generate_player_key(name):
     name_without_special_chars = re.sub(r'[^a-zA-Z]+', '', name)
     return name_without_special_chars.upper()
+
 
 def masters_api():
     url = "https://live-golf-data.p.rapidapi.com/leaderboard"
@@ -120,10 +124,14 @@ def masters_api():
             'Pos': player.get('position'),
             'Player': player.get('firstName') + ' ' + player.get('lastName'),
             'playerId': player.get('firstName') + player.get('lastName'),
-            'R1': cleanse_score(next((round_data['scoreToPar'] for round_data in player['rounds'] if round_data['roundId']['$numberInt'] == '1'), None)),
-            'R2': cleanse_score(next((round_data['scoreToPar'] for round_data in player['rounds'] if round_data['roundId']['$numberInt'] == '2'), None)),
-            'R3': cleanse_score(next((round_data['scoreToPar'] for round_data in player['rounds'] if round_data['roundId']['$numberInt'] == '3'), None)),
-            'R4': cleanse_score(next((round_data['scoreToPar'] for round_data in player['rounds'] if round_data['roundId']['$numberInt'] == '4'), None)),
+            'R1': cleanse_score(next((round_data['scoreToPar'] for round_data in player['rounds'] if
+                                      round_data['roundId']['$numberInt'] == '1'), None)),
+            'R2': cleanse_score(next((round_data['scoreToPar'] for round_data in player['rounds'] if
+                                      round_data['roundId']['$numberInt'] == '2'), None)),
+            'R3': cleanse_score(next((round_data['scoreToPar'] for round_data in player['rounds'] if
+                                      round_data['roundId']['$numberInt'] == '3'), None)),
+            'R4': cleanse_score(next((round_data['scoreToPar'] for round_data in player['rounds'] if
+                                      round_data['roundId']['$numberInt'] == '4'), None)),
             'To Par': cleanse_score(player.get('total'))
         }
         player_data.append(player_info)
@@ -136,8 +144,8 @@ def masters_api():
 
 
 def update_data():
-    #scraped_data = scrape_data()  # Scrape data from the website
-    scraped_data = masters_api() # fetch data from api
+    # scraped_data = scrape_data()  # Scrape data from the website
+    scraped_data = masters_api()  # fetch data from api
     # Delete existing data
     app.app_context().push()
     db.session.query(Masters).delete()
@@ -160,7 +168,6 @@ def update_data():
 
     db.session.commit()
 
-
     d = datetime.now()
     d = d.strftime("%A, %b %d at %I:%M %p")
     d = "Refreshed: " + d
@@ -171,6 +178,7 @@ def update_data():
     db.session.add(d)
 
     db.session.commit()
+
 
 '''
 def update_player_by_tier(user_id, tier, player_name):
@@ -192,9 +200,10 @@ def update_player_by_tier(user_id, tier, player_name):
         db.session.rollback()  # Handle any errors that occurred during commit
 '''
 
+
 def update_player_by_tier(user_id, tier, player_name, player_id):
     user_record = Draft.query.filter_by(user_id=user_id).first()
-    #player_id = int(player_id)
+    # player_id = int(player_id)
 
     if user_record:
         # Update existing record for the user and tier
@@ -212,6 +221,7 @@ def update_player_by_tier(user_id, tier, player_name, player_id):
         db.session.commit()
     except IntegrityError:
         db.session.rollback()  # Handle any errors that occurred during commit
+
 
 def get_leaderboard():
     # Fetching leaderboard data
@@ -238,7 +248,8 @@ def get_leaderboard():
         scores[score].append(entry)
 
     # Sorting the scores
-    sorted_scores = sorted(scores.keys(), key=lambda x: (x[0], x[1]))  # Sort by total_score and closest predicted score to top-ranked player's "To Par"
+    sorted_scores = sorted(scores.keys(), key=lambda x: (
+    x[0], x[1]))  # Sort by total_score and closest predicted score to top-ranked player's "To Par"
     leaderboard_entries = []
     leaderboard_email = []
     rank = 1
@@ -252,7 +263,6 @@ def get_leaderboard():
             rank += 1
 
     return leaderboard_entries, leaderboard_email
-
 
 
 def send_email(subject, sender, recipients, text_body, html_body):
@@ -277,6 +287,7 @@ def send_async_email(app, msg):
     with app.app_context():
         mail.send(msg)
 
+
 def send_leaderboard_email():
     # Prepare the email body with the leaderboard entries
     app.app_context().push()
@@ -284,10 +295,10 @@ def send_leaderboard_email():
     masters = Masters.query.all()
     for entry in masters:
         # Replace '0' with 'E' for r1, r2, r3, r4 for active player's scores
-        entry.r1 = 'E' if entry.r1 == '0' else entry.r1
-        entry.r2 = 'E' if entry.r2 == '0' else entry.r2
-        entry.r3 = 'E' if entry.r3 == '0' else entry.r3
-        entry.r4 = 'E' if entry.r4 == '0' else entry.r4
+        entry.r1 = 'E' if entry.r1 == '0' else '-' if entry.r1 == "None" else entry.r1
+        entry.r2 = 'E' if entry.r2 == '0' else '-' if entry.r2 == "None" else entry.r2
+        entry.r3 = 'E' if entry.r3 == '0' else '-' if entry.r3 == "None" else entry.r3
+        entry.r4 = 'E' if entry.r4 == '0' else '-' if entry.r4 == "None" else entry.r4
     email_body = render_template('email/leaderboard_email.html', leaderboard=leaderboard_entries, masters=masters)
 
     all_users = User.query.with_entities(User.email).all()
@@ -297,3 +308,12 @@ def send_leaderboard_email():
     sender = app.config['ADMINS'][0]
 
     Thread(target=send_email, args=(subject, sender, recipients, "", email_body)).start()
+
+
+def send_welcome_email(user, email):
+    email_body = render_template('email/welcome_email.html', user=user)
+
+    subject = '[Chi Chi] Confirmation of Registration'
+    sender = app.config['ADMINS'][0]
+
+    Thread(target=send_email, args=(subject, sender, [email], "", email_body)).start()

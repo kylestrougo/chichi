@@ -16,7 +16,7 @@ class Config(object):
     MAIL_PASSWORD = 'nuyp jlke pbti dceb'
 
     #mac
-    ##SERVER_NAME = '192.168.1.117:5000' # Replace with your server's hostname and port
+    #SERVER_NAME = '192.168.1.117:5000' # Replace with your server's hostname and port
     #pi
     #SERVER_NAME = '192.168.1.159:5000' # Replace with your server's hostname and port
     #prod
