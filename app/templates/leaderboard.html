@@ -39,6 +39,11 @@
     table {
         width: 100%; /* Make the table fill the container width */
     }
+    s
+    {
+        text-decoration: line-through;
+        text-decoration-color: black;
+    }
 
     /* Styles for mobile devices */
     @media (max-width: 768px) {
@@ -65,21 +70,24 @@
     }
 </style>
     <h1>Chi Chi Leaderboard</h1>
-
+<div style="text-align: center;">
+    <span class="datetime-text">[ *Only your top four ranked players are considered i.e., Player (Tier) (Current To Par) ]</span>
+</div>
 <div class="table-container">
      <table border="1">
   <thead>
     <tr>
       <th>Rank</th>
-      <th>Username</th>
-      <th>Tier 1</th>
-      <th>Tier 2</th>
-      <th>Tier 3</th>
-      <th>Tier 4</th>
-      <th>Tier 5</th>
-      <th>Tier 6</th>
+      <th>User</th>
+        <th>Total Score</th>
+      <th>Player 1</th>
+      <th>Player 2</th>
+      <th>Player 3</th>
+      <th>Player 4</th>
+      <th><s>Player 5</s></th>
+      <th><s>Player 6</s></th>
       <th>Tiebreaker</th>
-      <th>Total Score</th>
+
     </tr>
   </thead>
   <tbody>

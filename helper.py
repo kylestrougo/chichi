@@ -4,6 +4,9 @@ import pandas as pd
 from datetime import datetime
 from flask_mail import Message
 import re
+
+from sqlalchemy import or_, and_, func
+
 from app import mail
 from flask import url_for
 from app import db, app
@@ -223,8 +226,119 @@ def update_player_by_tier(user_id, tier, player_name, player_id):
         db.session.rollback()  # Handle any errors that occurred during commit
 
 
+
 def get_leaderboard():
-    # Fetching leaderboard data
+    # First, query the necessary data from the database
+    from sqlalchemy.orm import aliased
+    t1_masters = aliased(Masters, name='t1_masters')
+    t2_masters = aliased(Masters, name='t2_masters')
+    t3_masters = aliased(Masters, name='t3_masters')
+    t4_masters = aliased(Masters, name='t4_masters')
+    t5_masters = aliased(Masters, name='t5_masters')
+    t6_masters = aliased(Masters, name='t6_masters')
+
+    query_scores = db.session.query(
+        User.username,
+        Draft.single_number,
+        Draft.tier1,
+        t1_masters.to_par.label('t1_to_par'),
+        Draft.tier2,
+        t2_masters.to_par.label('t2_to_par'),
+        Draft.tier3,
+        t3_masters.to_par.label('t3_to_par'),
+        Draft.tier4,
+        t4_masters.to_par.label('t4_to_par'),
+        Draft.tier5,
+        t5_masters.to_par.label('t5_to_par'),
+        Draft.tier6,
+        t6_masters.to_par.label('t6_to_par'),
+    ).join(Draft).join(t1_masters, Draft.t1_id == t1_masters.playerId) \
+        .join(t2_masters, Draft.t2_id == t2_masters.playerId) \
+        .join(t3_masters, Draft.t3_id == t3_masters.playerId) \
+        .join(t4_masters, Draft.t4_id == t4_masters.playerId) \
+        .join(t5_masters, Draft.t5_id == t5_masters.playerId) \
+        .join(t6_masters, Draft.t6_id == t6_masters.playerId)
+
+    df_scores = pd.DataFrame(
+        query_scores,
+        columns=["username", "single_number",
+                 "tier1", "t1_to_par",
+                 "tier2", "t2_to_par",
+                 "tier3", "t3_to_par",
+                 "tier4", "t4_to_par",
+                 "tier5", "t5_to_par",
+                 "tier6", "t6_to_par"],
+    )
+
+    # Assuming df_scores is your original DataFrame
+
+    # Create a new DataFrame to store the result
+    result_df = pd.DataFrame(columns=["Username", "single_number",
+                                      "lowest_player", "second_lowest_player",
+                                      "third_lowest_player", "fourth_lowest_player",
+                                      "fifth_lowest_player", "highest_player",
+                                      "sum_lowest_to_par"])
+
+    # Iterate through each row in the original DataFrame
+    for index, row in df_scores.iterrows():
+        # Extracting player names and to_par values
+        players = [row[f"tier{i}"] for i in range(1, 7)]
+        to_pars = [row[f"t{i}_to_par"] for i in range(1, 7)]
+
+        # Sorting players and to_pars based on to_pars
+        sorted_data = sorted(zip(players, to_pars), key=lambda x: x[1])
+
+        # Extracting required information for the result DataFrame
+        lowest_player, second_lowest_player, third_lowest_player, fourth_lowest_player, fifth_lowest_player, highest_player = sorted_data
+        sum_lowest_to_par = sum(to_par for _, to_par in sorted_data[:4])
+
+        # Adding a new row to the result DataFrame
+        result_df = result_df.append({
+            "username": row["username"],
+            "single_number": row["single_number"],
+            "lowest_player": f"{lowest_player[0]} (T{players.index(lowest_player[0]) + 1}) ({lowest_player[1]})",
+            "second_lowest_player": f"{second_lowest_player[0]} (T{players.index(second_lowest_player[0]) + 1}) ({second_lowest_player[1]})",
+            "third_lowest_player": f"{third_lowest_player[0]} (T{players.index(third_lowest_player[0]) + 1}) ({third_lowest_player[1]})",
+            "fourth_lowest_player": f"{fourth_lowest_player[0]} (T{players.index(fourth_lowest_player[0]) + 1}) ({fourth_lowest_player[1]})",
+            "fifth_lowest_player": f"{fifth_lowest_player[0]} (T{players.index(fifth_lowest_player[0]) + 1}) ({fifth_lowest_player[1]})",
+            "highest_player": f"{highest_player[0]} (T{players.index(highest_player[0]) + 1}) ({highest_player[1]})",
+            "sum_lowest_to_par": sum_lowest_to_par
+        }, ignore_index=True)
+
+    # Below block determines how close a user's predicted score is to the top-ranked player's "to par"
+    scores = defaultdict(list)
+    for entry in result_df.itertuples():
+        total_score = entry.sum_lowest_to_par  # Use the total_score column calculated above
+        predicted_score = entry.single_number
+        top_player_to_par = Masters.query.order_by(Masters.pos).first().to_par
+        score_difference = abs((top_player_to_par) - (predicted_score))
+
+        score = (total_score, score_difference)
+        scores[score].append(entry)
+
+    # Sorting the users based on criteria
+    sorted_scores = sorted(scores.keys(), key=lambda x: (
+        x[0], x[1]))  # Sort by total_score and closest predicted score to top-ranked player's "to par"
+    leaderboard_entries = []
+    leaderboard_email = []
+    rank = 1
+    for score in sorted_scores:
+        for entry in scores[score]:
+            user_profile_url = url_for('user', username=entry.username)
+            user_entry = f"<tr><td>{rank}</td><td><a href='{user_profile_url}' style=\"color: blue; max-width: 200px; text-decoration: underline;\">{entry.username}</a></td><td>{entry.sum_lowest_to_par}</td><td>{entry.lowest_player}</td><td>{entry.second_lowest_player}</td><td>{entry.third_lowest_player}</td><td>{entry.fourth_lowest_player}</td><td>{entry.fifth_lowest_player}</td><td>{entry.highest_player}</td><td>{entry.single_number}</td></tr>"
+            user_email = f"<tr><td style='border: 1px solid #1a351d; padding: 10px; text-align: center; font-size: 16px;'>{rank}</td><td style='border: 1px solid #1a351d; padding: 10px; text-align: center; font-size: 16px;'><a href='{user_profile_url}' style='color: blue; max-width: 200px; text-decoration: underline;'>{entry.username}</a></td><td style='border: 1px solid #1a351d; padding: 10px; text-align: center; font-size: 16px;'>{entry.single_number}</td><td style='border: 1px solid #1a351d; padding: 10px; text-align: center; font-size: 16px;'>{entry.sum_lowest_to_par}</td></tr>"
+            leaderboard_entries.append(user_entry)
+            leaderboard_email.append(user_email)
+            rank += 1
+
+    return leaderboard_entries, leaderboard_email
+
+
+
+
+def get_leaderboard_old():
+    # Fetching Masters data, and computing total_score for a user
+    # total_score = tier1 to_par + tier2 to_par + ... + tier6 to_par
     leaderboard_data = db.session.query(User.username, Draft, db.func.sum(Masters.to_par).label('total_score')) \
         .join(Draft) \
         .join(Masters, (Draft.t1_id == Masters.playerId) |
@@ -236,7 +350,7 @@ def get_leaderboard():
         .group_by(Draft.id) \
         .all()
 
-    # Collecting scores and users
+    #Below block determines how close a user's predicted score is the the top-ranked player's "to par"
     scores = defaultdict(list)
     for entry in leaderboard_data:
         total_score = entry.total_score
@@ -247,7 +361,7 @@ def get_leaderboard():
         score = (total_score, score_difference)
         scores[score].append(entry)
 
-    # Sorting the scores
+    # Sorting the users based on criteria
     sorted_scores = sorted(scores.keys(), key=lambda x: (
     x[0], x[1]))  # Sort by total_score and closest predicted score to top-ranked player's "To Par"
     leaderboard_entries = []

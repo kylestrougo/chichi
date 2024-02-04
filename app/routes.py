@@ -27,6 +27,7 @@ def tournament_start():
 @app.route('/index')
 @login_required
 def index():
+    after_request()
     data = Masters.query.all()
     for entry in data:
         # Replace '0' with 'E' for r1, r2, r3, r4 for active player's scores
@@ -44,7 +45,6 @@ def index():
 def user(username):
     trigger = TournamentStatus.query.first()
     trigger = trigger.status
-    print("User: ", trigger)
     user = User.query.filter_by(username=username).first_or_404()
     user_record = Draft.query.filter_by(user=user).first()
     user_record_dict = {
@@ -104,12 +104,13 @@ def register():
 
 '''
 @app.after_request
-def after_request(response):
+'''
+def after_request():
     if current_user.is_authenticated:
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
-    return response
-'''
+    return 0
+
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
@@ -133,7 +134,6 @@ def edit_profile():
 def leaderboard():
     trigger = TournamentStatus.query.first()
     trigger = trigger.status
-    print("Leaderboard: ", trigger)
     if trigger == 1:
         leaderboard, x = get_leaderboard()
         return render_template('leaderboard.html', leaderboard=leaderboard)
@@ -147,7 +147,6 @@ def leaderboard():
 def smack():
     trigger = TournamentStatus.query.first()
     trigger = trigger.status
-    print("Smack: ", trigger)
     form = PostForm()
     if form.validate_on_submit():
         post = Post(body=form.post.data, author=current_user)

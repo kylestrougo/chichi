@@ -8,10 +8,10 @@ import os
 
 
 def add_jobs():
-    scheduler.add_job(id='refresh_scores', func=update_data, trigger='interval', minutes=10)
-
     start_date = datetime(2024, 1, 4, 13, 40, 0)
-    end_date = datetime(2024, 1, 7, 20, 0, 30)
+    end_date = datetime(2024, 1, 20, 20, 0, 30)
+
+    scheduler.add_job(id='refresh_scores', func=update_data, trigger='interval', minutes=1, start_date=start_date, end_date=end_date)
 
     email_trigger = CronTrigger(hour=18, minute=0, second=10)
     scheduler.add_job(id='email_leaderboard', func=send_leaderboard_email, trigger=email_trigger, start_date=start_date,
@@ -30,12 +30,12 @@ if __name__ == '__main__':
     # reset the status of TournamentStatus
     app.app_context().push()
     db.session.query(TournamentStatus).delete()
-    s = TournamentStatus(status=0)
+    s = TournamentStatus(status=1)
     db.session.add(s)
     db.session.commit()
     print("TournamentStatus: ", TournamentStatus.query.first())
 
     initialize_scheduler()
-    #app.run(debug=True, host='0.0.0.0')
-    os.system("gunicorn -w 3 -b 0.0.0.0:5000 app:app")
+    app.run(debug=True, host='0.0.0.0')
+    #os.system("gunicorn -w 3 -b 0.0.0.0:5000 app:app")
 

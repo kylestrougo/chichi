@@ -17,7 +17,7 @@ moment = Moment(app)
 app.config['STATIC_FOLDER'] = 'static'
 mail = Mail(app)
 # to  update with prod URL  domain?
-app.config['SESSION_COOKIE_DOMAIN'] = 'chi-chi.duckdns.org'
+#app.config['SESSION_COOKIE_DOMAIN'] = 'chi-chi.duckdns.org'
 
 scheduler = APScheduler()
 
