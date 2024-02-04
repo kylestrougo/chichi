@@ -95,10 +95,10 @@ def generate_player_key(name):
 def masters_api():
     url = "https://live-golf-data.p.rapidapi.com/leaderboard"
 
-    querystring = {"orgId": "1", "tournId": "016", "year": "2024"}
+    querystring = {"orgId": "1", "tournId": "003", "year": "2024"}
 
     headers = {
-        "X-RapidAPI-Key": "a0ad1bcf9amsh91cc2112fc6cc5bp10c0dajsne93b3dec7c82",
+        "X-RapidAPI-Key": "1405a0c4a0mshb7023ea86c390c7p136ecbjsn26dab7c5510b",
         "X-RapidAPI-Host": "live-golf-data.p.rapidapi.com"
     }
 

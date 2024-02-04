@@ -16,12 +16,12 @@ class Config(object):
     MAIL_PASSWORD = 'nuyp jlke pbti dceb'
 
     #flask run
-    SERVER_NAME = '127.0.0.1:5000'
+    #SERVER_NAME = '127.0.0.1:5000'
     #mac
     ##SERVER_NAME = '192.168.1.117:5000' # Replace with your server's hostname and port
     #pi
     #SERVER_NAME = '192.168.1.159:5000' # Replace with your server's hostname and port
     #prod
-    #SERVER_NAME = 'chi-chi.duckdns.org' # Replace with your server's hostname and port
+    SERVER_NAME = 'chi-chi.duckdns.org' # Replace with your server's hostname and port
     APPLICATION_ROOT = '/' # Set if your app is hosted under a subpath
     PREFERRED_URL_SCHEME = 'https'
