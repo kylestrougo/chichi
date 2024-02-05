@@ -21,6 +21,7 @@ mail = Mail(app)
 #app.config['REMEMBER_COOKIE_DOMAIN'] = '.chi-chi.duckdns.org'
 #app.config['SESSION_COOKIE_SECURE'] = False
 #app.config['REMEMBER_COOKIE_SECURE'] = False
+app.config['SECRET_KEY'] = 'qwert54321'
 
 
 scheduler = APScheduler()
