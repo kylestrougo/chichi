@@ -25,3 +25,4 @@ class Config(object):
     SERVER_NAME = 'chi-chi.duckdns.org' # Replace with your server's hostname and port
     APPLICATION_ROOT = '/' # Set if your app is hosted under a subpath
     PREFERRED_URL_SCHEME = 'https'
+    REMEMBER_COOKIE_DOMAIN ='.chi-chi.duckdns.org'
