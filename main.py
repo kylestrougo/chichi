@@ -46,7 +46,7 @@ def initialize_scheduler():
 
 if __name__ == '__main__':
     # reset the status of TournamentStatus
-    ##app.app_context().push()
+    app.app_context().push()
     with app.app_context():
 
         db.session.query(TournamentStatus).delete()
