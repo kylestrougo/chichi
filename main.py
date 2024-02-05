@@ -46,14 +46,16 @@ def initialize_scheduler():
 
 if __name__ == '__main__':
     # reset the status of TournamentStatus
-    app.app_context().push()
-    db.session.query(TournamentStatus).delete()
-    s = TournamentStatus(status=0)
-    db.session.add(s)
-    db.session.commit()
-    print("TournamentStatus: ", TournamentStatus.query.first())
+    ##app.app_context().push()
+    with app.app_context():
 
-    initialize_scheduler()
-    ##app.run(debug=True, host='0.0.0.0')
-    os.system("gunicorn -w 1 -b 0.0.0.0:5000 app:app")
+        db.session.query(TournamentStatus).delete()
+        s = TournamentStatus(status=0)
+        db.session.add(s)
+        db.session.commit()
+        print("TournamentStatus: ", TournamentStatus.query.first())
+
+        initialize_scheduler()
+        ##app.run(debug=True, host='0.0.0.0')
+        os.system("gunicorn -w 1 -b 0.0.0.0:5000 app:app")
 
