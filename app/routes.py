@@ -70,7 +70,7 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None: #or not user.check_password(form.password.data):
-           flash('Invalid username or password')
+           flash('HI Invalid username or password')
            return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
