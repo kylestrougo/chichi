@@ -15,12 +15,13 @@ import pandas as pd
 
 # Function to grant/ revoke access upon tournament start
 def tournament_start():
-    app.app_context().push()
-    db.session.query(TournamentStatus).delete()
-    s = TournamentStatus(status=1)
-    db.session.add(s)
-    db.session.commit()
-    print("Access granted at:", datetime.now(), ", Trigger is: ", TournamentStatus.query.first())
+    #app.app_context().push()
+    with app.app_context():
+        db.session.query(TournamentStatus).delete()
+        s = TournamentStatus(status=1)
+        db.session.add(s)
+        db.session.commit()
+        print("Access granted at:", datetime.now(), ", Trigger is: ", TournamentStatus.query.first())
 
 
 @app.route('/')

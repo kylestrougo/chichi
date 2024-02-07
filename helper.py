@@ -150,37 +150,38 @@ def update_data():
     # scraped_data = scrape_data()  # Scrape data from the website
     scraped_data = masters_api()  # fetch data from api
     # Delete existing data
-    app.app_context().push()
-    db.session.query(Masters).delete()
+    #app.app_context().push()
+    with app.app_context():
+        db.session.query(Masters).delete()
 
-    # Save the new data with 'to_par' values as integers
-    for index, row in scraped_data.iterrows():
-        to_par = row['To Par']
+        # Save the new data with 'to_par' values as integers
+        for index, row in scraped_data.iterrows():
+            to_par = row['To Par']
 
-        entry = Masters(
-            pos=str(row['Pos']),
-            player=row['Player'],
-            playerId=row['playerId'],
-            r1=str(row['R1']),
-            r2=str(row['R2']),
-            r3=str(row['R3']),
-            r4=str(row['R4']),
-            to_par=to_par  # Store the converted value as integer in the DB
-        )
-        db.session.add(entry)
+            entry = Masters(
+                pos=str(row['Pos']),
+                player=row['Player'],
+                playerId=row['playerId'],
+                r1=str(row['R1']),
+                r2=str(row['R2']),
+                r3=str(row['R3']),
+                r4=str(row['R4']),
+                to_par=to_par  # Store the converted value as integer in the DB
+            )
+            db.session.add(entry)
 
-    db.session.commit()
+        db.session.commit()
 
-    d = datetime.now()
-    d = d.strftime("%A, %b %d at %I:%M %p")
-    d = "Refreshed: " + d
-    # print(d)
+        d = datetime.now()
+        d = d.strftime("%A, %b %d at %I:%M %p")
+        d = "Refreshed: " + d
+        # print(d)
 
-    db.session.query(updated).delete()
-    d = updated(datetime=str(d))
-    db.session.add(d)
+        db.session.query(updated).delete()
+        d = updated(datetime=str(d))
+        db.session.add(d)
 
-    db.session.commit()
+        db.session.commit()
 
 
 '''
@@ -404,24 +405,25 @@ def send_async_email(app, msg):
 
 def send_leaderboard_email():
     # Prepare the email body with the leaderboard entries
-    app.app_context().push()
-    x, leaderboard_entries = get_leaderboard()
-    masters = Masters.query.all()
-    for entry in masters:
-        # Replace '0' with 'E' for r1, r2, r3, r4 for active player's scores
-        entry.r1 = 'E' if entry.r1 == '0' else '-' if entry.r1 == "None" else entry.r1
-        entry.r2 = 'E' if entry.r2 == '0' else '-' if entry.r2 == "None" else entry.r2
-        entry.r3 = 'E' if entry.r3 == '0' else '-' if entry.r3 == "None" else entry.r3
-        entry.r4 = 'E' if entry.r4 == '0' else '-' if entry.r4 == "None" else entry.r4
-    email_body = render_template('email/leaderboard_email.html', leaderboard=leaderboard_entries, masters=masters)
+    #app.app_context().push()
+    with app.app_context():
+        x, leaderboard_entries = get_leaderboard()
+        masters = Masters.query.all()
+        for entry in masters:
+            # Replace '0' with 'E' for r1, r2, r3, r4 for active player's scores
+            entry.r1 = 'E' if entry.r1 == '0' else '-' if entry.r1 == "None" else entry.r1
+            entry.r2 = 'E' if entry.r2 == '0' else '-' if entry.r2 == "None" else entry.r2
+            entry.r3 = 'E' if entry.r3 == '0' else '-' if entry.r3 == "None" else entry.r3
+            entry.r4 = 'E' if entry.r4 == '0' else '-' if entry.r4 == "None" else entry.r4
+        email_body = render_template('email/leaderboard_email.html', leaderboard=leaderboard_entries, masters=masters)
 
-    all_users = User.query.with_entities(User.email).all()
-    recipients = [user.email for user in all_users]
+        all_users = User.query.with_entities(User.email).all()
+        recipients = [user.email for user in all_users]
 
-    subject = '[Chi Chi] Leaderboard Report'
-    sender = app.config['ADMINS'][0]
+        subject = '[Chi Chi] Leaderboard Report'
+        sender = app.config['ADMINS'][0]
 
-    Thread(target=send_email, args=(subject, sender, recipients, "", email_body)).start()
+        Thread(target=send_email, args=(subject, sender, recipients, "", email_body)).start()
 
 
 def send_welcome_email(user, email):
