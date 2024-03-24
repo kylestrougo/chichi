@@ -15,7 +15,7 @@ class Config(object):
     MAIL_PORT = 587
     MAIL_USE_TLS = 1
     MAIL_USERNAME = 'chi.chi.masters1'
-    MAIL_PASSWORD = 'nuyp jlke pbti dceb'
+    MAIL_PASSWORD = 'Louiepopeye5!'
 
     #flask run
     #SERVER_NAME = '127.0.0.1:5000'
