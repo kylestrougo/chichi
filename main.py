@@ -9,8 +9,8 @@ import os
 
 def add_jobs():
     # tournament dates
-    t_start = datetime(2024, 2, 8, 9, 0, 0)
-    t_end = datetime(2024, 2, 11, 22, 0, 0)
+    t_start = datetime(2024, 3, 24, 9, 0, 0)
+    t_end = datetime(2024, 3, 27, 22, 0, 0)
 
     #day1 dates
     end_dt_d1 = datetime(2024, 2, 8, 22, 0, 0)
